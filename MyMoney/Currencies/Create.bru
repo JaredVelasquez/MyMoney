@@ -1,0 +1,24 @@
+meta {
+  name: Create
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/currencies
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZDE1YWI1OGEtNDY4OS00NzQ1LWJiMjctNDZlYzQ3NTc3MzFmIiwiZW1haWwiOiJqYXJlZC52ZWxhc3F1ZXoxMTIyQGdtYWlsLmNvbSIsImlzcyI6Im1pLWFwcC1iYWNrZW5kIiwic3ViIjoiZDE1YWI1OGEtNDY4OS00NzQ1LWJiMjctNDZlYzQ3NTc3MzFmIiwiZXhwIjoxNzQ2OTk0MTQzLCJuYmYiOjE3NDY5MDc3NDMsImlhdCI6MTc0NjkwNzc0M30.ImdaYKftf-mCbtwah0u8O_kX7i-9By-8EjE0fVTlCP8
+}
+
+body:json {
+  {
+    "code": "YNI",
+    "name": "YENES INVENT",
+    "symbol": "YNI",
+    "is_active": true
+  }
+}

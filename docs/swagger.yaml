@@ -1,0 +1,1078 @@
+swagger: "2.0"
+info:
+  description: "API para mi-app-backend"
+  version: "1.0.0"
+  title: "Mi App Backend API"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "contacto@miapp.com"
+  license:
+    name: "Privada"
+host: "localhost:8080"
+basePath: "/"
+tags:
+  - name: "auth"
+    description: "Autenticación de usuarios"
+  - name: "users"
+    description: "Operaciones de usuarios"
+  - name: "currencies"
+    description: "Operaciones de monedas"
+  - name: "plans"
+    description: "Operaciones de planes de suscripción"
+  - name: "subscriptions"
+    description: "Operaciones de suscripciones de usuarios"
+
+schemes:
+  - "http"
+  - "https"
+
+securityDefinitions:
+  Bearer:
+    type: "apiKey"
+    name: "Authorization"
+    in: "header"
+    description: "Ingrese el token JWT con el prefijo Bearer: Bearer {token}"
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - "auth"
+      summary: "Registrar un nuevo usuario"
+      description: "Crea una nueva cuenta de usuario en el sistema"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Información de registro del usuario"
+          required: true
+          schema:
+            type: "object"
+            required:
+              - "email"
+              - "password"
+              - "name"
+            properties:
+              email:
+                type: "string"
+                format: "email"
+              password:
+                type: "string"
+                format: "password"
+              name:
+                type: "string"
+      responses:
+        201:
+          description: "Registro exitoso"
+        400:
+          description: "Datos inválidos"
+        409:
+          description: "El correo ya está registrado"
+
+  /auth/login:
+    post:
+      tags:
+        - "auth"
+      summary: "Iniciar sesión"
+      description: "Inicia sesión y obtiene un token JWT"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Credenciales de inicio de sesión"
+          required: true
+          schema:
+            type: "object"
+            required:
+              - "email"
+              - "password"
+            properties:
+              email:
+                type: "string"
+                format: "email"
+              password:
+                type: "string"
+                format: "password"
+      responses:
+        200:
+          description: "Inicio de sesión exitoso"
+          schema:
+            type: "object"
+            properties:
+              token:
+                type: "string"
+        401:
+          description: "Credenciales inválidas"
+
+  /users/me:
+    get:
+      tags:
+        - "users"
+      summary: "Obtener información del usuario actual"
+      description: "Devuelve los datos del usuario autenticado"
+      produces:
+        - "application/json"
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: "Operación exitosa"
+          schema:
+            type: "object"
+            properties:
+              id:
+                type: "string"
+              email:
+                type: "string"
+              name:
+                type: "string"
+              created_at:
+                type: "string"
+                format: "date-time"
+        401:
+          description: "No autorizado"
+
+  /users/update:
+    put:
+      tags:
+        - "users"
+      summary: "Actualizar información del usuario"
+      description: "Actualiza los datos del usuario autenticado"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      security:
+        - Bearer: []
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Información a actualizar"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              name:
+                type: "string"
+              email:
+                type: "string"
+                format: "email"
+      responses:
+        200:
+          description: "Actualización exitosa"
+        400:
+          description: "Datos inválidos"
+        401:
+          description: "No autorizado"
+
+  /users/change-password:
+    post:
+      tags:
+        - "users"
+      summary: "Cambiar contraseña"
+      description: "Permite al usuario cambiar su contraseña"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      security:
+        - Bearer: []
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Datos para cambio de contraseña"
+          required: true
+          schema:
+            type: "object"
+            required:
+              - "current_password"
+              - "new_password"
+            properties:
+              current_password:
+                type: "string"
+                format: "password"
+              new_password:
+                type: "string"
+                format: "password"
+      responses:
+        200:
+          description: "Contraseña actualizada"
+        400:
+          description: "Datos inválidos"
+        401:
+          description: "No autorizado"
+
+  /currencies:
+    get:
+      tags:
+        - "currencies"
+      summary: "Obtener todas las monedas"
+      description: "Retorna una lista de todas las monedas disponibles"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Operación exitosa"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Currency"
+    post:
+      tags:
+        - "currencies"
+      summary: "Crear una nueva moneda"
+      description: "Crea una nueva moneda en el sistema"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      security:
+        - Bearer: []
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Datos de la moneda a crear"
+          required: true
+          schema:
+            $ref: "#/definitions/CreateCurrencyRequest"
+      responses:
+        201:
+          description: "Moneda creada"
+          schema:
+            $ref: "#/definitions/Currency"
+        400:
+          description: "Datos inválidos"
+        401:
+          description: "No autorizado"
+        409:
+          description: "Conflicto (ya existe)"
+
+  /currencies/active:
+    get:
+      tags:
+        - "currencies"
+      summary: "Obtener monedas activas"
+      description: "Retorna una lista de las monedas activas"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Operación exitosa"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Currency"
+
+  /currencies/{id}:
+    get:
+      tags:
+        - "currencies"
+      summary: "Obtener moneda por ID"
+      description: "Devuelve una moneda específica por su ID"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID de la moneda"
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: "Operación exitosa"
+          schema:
+            $ref: "#/definitions/Currency"
+        404:
+          description: "Moneda no encontrada"
+    put:
+      tags:
+        - "currencies"
+      summary: "Actualizar moneda"
+      description: "Actualiza los datos de una moneda existente"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID de la moneda"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Datos de la moneda a actualizar"
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateCurrencyRequest"
+      responses:
+        200:
+          description: "Moneda actualizada"
+          schema:
+            $ref: "#/definitions/Currency"
+        400:
+          description: "Datos inválidos"
+        401:
+          description: "No autorizado"
+        404:
+          description: "Moneda no encontrada"
+    delete:
+      tags:
+        - "currencies"
+      summary: "Eliminar moneda"
+      description: "Elimina una moneda existente"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID de la moneda"
+          required: true
+          type: "string"
+      responses:
+        204:
+          description: "Moneda eliminada"
+        401:
+          description: "No autorizado"
+        404:
+          description: "Moneda no encontrada"
+
+  /plans:
+    get:
+      tags:
+        - "plans"
+      summary: "Obtener todos los planes"
+      description: "Retorna una lista de todos los planes disponibles"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Operación exitosa"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Plan"
+    post:
+      tags:
+        - "plans"
+      summary: "Crear un nuevo plan"
+      description: "Crea un nuevo plan de suscripción"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      security:
+        - Bearer: []
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Datos del plan a crear"
+          required: true
+          schema:
+            $ref: "#/definitions/CreatePlanRequest"
+      responses:
+        201:
+          description: "Plan creado"
+          schema:
+            $ref: "#/definitions/Plan"
+        400:
+          description: "Datos inválidos"
+        401:
+          description: "No autorizado"
+
+  /plans/active:
+    get:
+      tags:
+        - "plans"
+      summary: "Obtener planes activos"
+      description: "Retorna una lista de los planes activos"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Operación exitosa"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Plan"
+
+  /plans/public:
+    get:
+      tags:
+        - "plans"
+      summary: "Obtener planes públicos"
+      description: "Retorna una lista de los planes públicos"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Operación exitosa"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Plan"
+
+  /plans/{id}:
+    get:
+      tags:
+        - "plans"
+      summary: "Obtener plan por ID"
+      description: "Devuelve un plan específico por su ID"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID del plan"
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: "Operación exitosa"
+          schema:
+            $ref: "#/definitions/Plan"
+        404:
+          description: "Plan no encontrado"
+    put:
+      tags:
+        - "plans"
+      summary: "Actualizar plan"
+      description: "Actualiza los datos de un plan existente"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID del plan"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Datos del plan a actualizar"
+          required: true
+          schema:
+            $ref: "#/definitions/UpdatePlanRequest"
+      responses:
+        200:
+          description: "Plan actualizado"
+          schema:
+            $ref: "#/definitions/Plan"
+        400:
+          description: "Datos inválidos"
+        401:
+          description: "No autorizado"
+        404:
+          description: "Plan no encontrado"
+    delete:
+      tags:
+        - "plans"
+      summary: "Eliminar plan"
+      description: "Elimina un plan existente"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID del plan"
+          required: true
+          type: "string"
+      responses:
+        204:
+          description: "Plan eliminado"
+        401:
+          description: "No autorizado"
+        404:
+          description: "Plan no encontrado"
+
+  /subscriptions:
+    get:
+      tags:
+        - "subscriptions"
+      summary: "Obtener suscripciones del usuario"
+      description: "Retorna todas las suscripciones del usuario autenticado"
+      produces:
+        - "application/json"
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: "Operación exitosa"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Subscription"
+        401:
+          description: "No autorizado"
+    post:
+      tags:
+        - "subscriptions"
+      summary: "Crear nueva suscripción"
+      description: "Crea una nueva suscripción para el usuario autenticado"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      security:
+        - Bearer: []
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Datos de la suscripción a crear"
+          required: true
+          schema:
+            $ref: "#/definitions/CreateSubscriptionRequest"
+      responses:
+        201:
+          description: "Suscripción creada"
+          schema:
+            $ref: "#/definitions/Subscription"
+        400:
+          description: "Datos inválidos"
+        401:
+          description: "No autorizado"
+
+  /subscriptions/active:
+    get:
+      tags:
+        - "subscriptions"
+      summary: "Obtener suscripción activa"
+      description: "Retorna la suscripción activa del usuario autenticado"
+      produces:
+        - "application/json"
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: "Operación exitosa"
+          schema:
+            $ref: "#/definitions/Subscription"
+        401:
+          description: "No autorizado"
+        404:
+          description: "No hay suscripción activa"
+
+  /subscriptions/{id}:
+    get:
+      tags:
+        - "subscriptions"
+      summary: "Obtener suscripción por ID"
+      description: "Devuelve una suscripción específica por su ID"
+      produces:
+        - "application/json"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID de la suscripción"
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: "Operación exitosa"
+          schema:
+            $ref: "#/definitions/Subscription"
+        401:
+          description: "No autorizado"
+        403:
+          description: "No tiene permiso"
+        404:
+          description: "Suscripción no encontrada"
+
+  /subscriptions/{id}/cancel:
+    post:
+      tags:
+        - "subscriptions"
+      summary: "Cancelar suscripción"
+      description: "Cancela una suscripción existente"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID de la suscripción"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Datos para cancelación"
+          schema:
+            type: "object"
+            properties:
+              reason:
+                type: "string"
+                description: "Motivo de la cancelación"
+      responses:
+        200:
+          description: "Suscripción cancelada"
+        401:
+          description: "No autorizado"
+        403:
+          description: "No tiene permiso"
+        404:
+          description: "Suscripción no encontrada"
+
+  /subscriptions/{id}/plan:
+    put:
+      tags:
+        - "subscriptions"
+      summary: "Cambiar plan de suscripción"
+      description: "Cambia el plan de una suscripción existente"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID de la suscripción"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Datos para cambio de plan"
+          required: true
+          schema:
+            type: "object"
+            required:
+              - "plan_id"
+            properties:
+              plan_id:
+                type: "string"
+                description: "ID del nuevo plan"
+      responses:
+        200:
+          description: "Plan cambiado"
+          schema:
+            $ref: "#/definitions/Subscription"
+        400:
+          description: "Datos inválidos"
+        401:
+          description: "No autorizado"
+        403:
+          description: "No tiene permiso"
+        404:
+          description: "Suscripción no encontrada"
+
+  /subscriptions/{id}/payment-method:
+    put:
+      tags:
+        - "subscriptions"
+      summary: "Actualizar método de pago"
+      description: "Actualiza el método de pago de una suscripción"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID de la suscripción"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Datos del método de pago"
+          required: true
+          schema:
+            type: "object"
+            required:
+              - "payment_method_id"
+            properties:
+              payment_method_id:
+                type: "string"
+                description: "ID del método de pago"
+      responses:
+        200:
+          description: "Método de pago actualizado"
+          schema:
+            $ref: "#/definitions/Subscription"
+        400:
+          description: "Datos inválidos"
+        401:
+          description: "No autorizado"
+        403:
+          description: "No tiene permiso"
+        404:
+          description: "Suscripción no encontrada"
+
+  /subscriptions/admin/status:
+    get:
+      tags:
+        - "subscriptions"
+      summary: "Listar suscripciones por estado (admin)"
+      description: "Retorna suscripciones filtradas por estado"
+      produces:
+        - "application/json"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "status"
+          in: "query"
+          description: "Estado de suscripción"
+          required: true
+          type: "string"
+          enum: ["active", "cancelled", "expired", "pending", "failed"]
+      responses:
+        200:
+          description: "Operación exitosa"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Subscription"
+        401:
+          description: "No autorizado"
+        403:
+          description: "No tiene permiso de administrador"
+
+  /subscriptions/admin/expiring:
+    get:
+      tags:
+        - "subscriptions"
+      summary: "Listar suscripciones por expirar (admin)"
+      description: "Retorna suscripciones que expirarán pronto"
+      produces:
+        - "application/json"
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: "Operación exitosa"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Subscription"
+        401:
+          description: "No autorizado"
+        403:
+          description: "No tiene permiso de administrador"
+
+  /subscriptions/admin/pending-renewals:
+    get:
+      tags:
+        - "subscriptions"
+      summary: "Listar renovaciones pendientes (admin)"
+      description: "Retorna suscripciones pendientes de renovación"
+      produces:
+        - "application/json"
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: "Operación exitosa"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Subscription"
+        401:
+          description: "No autorizado"
+        403:
+          description: "No tiene permiso de administrador"
+
+definitions:
+  Currency:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      code:
+        type: "string"
+        description: "Código ISO de la moneda (USD, EUR, etc.)"
+      name:
+        type: "string"
+        description: "Nombre de la moneda"
+      symbol:
+        type: "string"
+        description: "Símbolo de la moneda ($, €, etc.)"
+      is_active:
+        type: "boolean"
+        description: "Indica si la moneda está activa"
+      created_at:
+        type: "string"
+        format: "date-time"
+      updated_at:
+        type: "string"
+        format: "date-time"
+
+  CreateCurrencyRequest:
+    type: "object"
+    required:
+      - "code"
+      - "name"
+      - "symbol"
+    properties:
+      code:
+        type: "string"
+        description: "Código ISO de la moneda (USD, EUR, etc.)"
+      name:
+        type: "string"
+        description: "Nombre de la moneda"
+      symbol:
+        type: "string"
+        description: "Símbolo de la moneda ($, €, etc.)"
+      is_active:
+        type: "boolean"
+        description: "Indica si la moneda está activa"
+        default: true
+
+  UpdateCurrencyRequest:
+    type: "object"
+    required:
+      - "code"
+      - "name"
+      - "symbol"
+    properties:
+      code:
+        type: "string"
+        description: "Código ISO de la moneda (USD, EUR, etc.)"
+      name:
+        type: "string"
+        description: "Nombre de la moneda"
+      symbol:
+        type: "string"
+        description: "Símbolo de la moneda ($, €, etc.)"
+      is_active:
+        type: "boolean"
+        description: "Indica si la moneda está activa"
+
+  PlanFeature:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "Nombre de la característica"
+      description:
+        type: "string"
+        description: "Descripción de la característica"
+      value:
+        type: "string"
+        description: "Valor de la característica (ej: Ilimitado, 5 GB)"
+      included:
+        type: "boolean"
+        description: "Indica si la característica está incluida en el plan"
+
+  Plan:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      name:
+        type: "string"
+        description: "Nombre del plan"
+      description:
+        type: "string"
+        description: "Descripción del plan"
+      price:
+        type: "number"
+        format: "float"
+        description: "Precio del plan"
+      currency_id:
+        type: "string"
+        description: "ID de la moneda"
+      interval:
+        type: "string"
+        description: "Intervalo de facturación"
+        enum: ["monthly", "yearly"]
+      features:
+        type: "array"
+        items:
+          $ref: "#/definitions/PlanFeature"
+      is_active:
+        type: "boolean"
+        description: "Indica si el plan está activo"
+      is_public:
+        type: "boolean"
+        description: "Indica si el plan es visible públicamente"
+      sort_order:
+        type: "integer"
+        description: "Orden de visualización"
+      created_at:
+        type: "string"
+        format: "date-time"
+      updated_at:
+        type: "string"
+        format: "date-time"
+
+  CreatePlanRequest:
+    type: "object"
+    required:
+      - "name"
+      - "description"
+      - "currency_id"
+      - "interval"
+    properties:
+      name:
+        type: "string"
+        description: "Nombre del plan"
+      description:
+        type: "string"
+        description: "Descripción del plan"
+      price:
+        type: "number"
+        format: "float"
+        description: "Precio del plan"
+        default: 0
+      currency_id:
+        type: "string"
+        description: "ID de la moneda"
+      interval:
+        type: "string"
+        description: "Intervalo de facturación"
+        enum: ["monthly", "yearly"]
+      features:
+        type: "array"
+        items:
+          $ref: "#/definitions/PlanFeature"
+      is_active:
+        type: "boolean"
+        description: "Indica si el plan está activo"
+        default: true
+      is_public:
+        type: "boolean"
+        description: "Indica si el plan es visible públicamente"
+        default: true
+      sort_order:
+        type: "integer"
+        description: "Orden de visualización"
+        default: 0
+
+  UpdatePlanRequest:
+    type: "object"
+    required:
+      - "name"
+      - "description"
+      - "currency_id"
+      - "interval"
+    properties:
+      name:
+        type: "string"
+        description: "Nombre del plan"
+      description:
+        type: "string"
+        description: "Descripción del plan"
+      price:
+        type: "number"
+        format: "float"
+        description: "Precio del plan"
+      currency_id:
+        type: "string"
+        description: "ID de la moneda"
+      interval:
+        type: "string"
+        description: "Intervalo de facturación"
+        enum: ["monthly", "yearly"]
+      features:
+        type: "array"
+        items:
+          $ref: "#/definitions/PlanFeature"
+      is_active:
+        type: "boolean"
+        description: "Indica si el plan está activo"
+      is_public:
+        type: "boolean"
+        description: "Indica si el plan es visible públicamente"
+      sort_order:
+        type: "integer"
+        description: "Orden de visualización"
+
+  Subscription:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      user_id:
+        type: "string"
+        description: "ID del usuario"
+      plan_id:
+        type: "string"
+        description: "ID del plan"
+      status:
+        type: "string"
+        description: "Estado de la suscripción"
+        enum: ["active", "cancelled", "expired", "pending", "failed"]
+      start_date:
+        type: "string"
+        format: "date-time"
+        description: "Fecha de inicio"
+      end_date:
+        type: "string"
+        format: "date-time"
+        description: "Fecha de finalización"
+      renewal_date:
+        type: "string"
+        format: "date-time"
+        description: "Fecha de renovación"
+      cancellation_date:
+        type: "string"
+        format: "date-time"
+        description: "Fecha de cancelación"
+      last_payment_date:
+        type: "string"
+        format: "date-time"
+        description: "Fecha del último pago"
+      next_payment_attempt:
+        type: "string"
+        format: "date-time"
+        description: "Fecha del próximo intento de pago"
+      payment_method_id:
+        type: "string"
+        description: "ID del método de pago"
+      metadata:
+        type: "object"
+        additionalProperties:
+          type: "string"
+        description: "Metadatos adicionales"
+      created_at:
+        type: "string"
+        format: "date-time"
+      updated_at:
+        type: "string"
+        format: "date-time"
+      is_active:
+        type: "boolean"
+        description: "Indica si la suscripción está activa actualmente"
+
+  CreateSubscriptionRequest:
+    type: "object"
+    required:
+      - "plan_id"
+    properties:
+      plan_id:
+        type: "string"
+        description: "ID del plan de suscripción"
+      start_date:
+        type: "string"
+        format: "date-time"
+        description: "Fecha de inicio (opcional, por defecto es ahora)"
+      end_date:
+        type: "string"
+        format: "date-time"
+        description: "Fecha de finalización (opcional, por defecto es un mes/año después de start_date)"
+      payment_method_id:
+        type: "string"
+        description: "ID del método de pago (requerido para planes no gratuitos)"
+      metadata:
+        type: "object"
+        additionalProperties:
+          type: "string"
+        description: "Metadatos adicionales" 

@@ -1,0 +1,1213 @@
+basePath: /
+definitions:
+  api.ChangePasswordRequest:
+    properties:
+      current_password:
+        type: string
+      new_password:
+        minLength: 6
+        type: string
+    required:
+    - current_password
+    - new_password
+    type: object
+  api.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  api.LoginResponse:
+    properties:
+      token:
+        type: string
+      user:
+        $ref: '#/definitions/api.UserResponse'
+    type: object
+  api.RegisterRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        minLength: 6
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
+  api.UpdateUserRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+    required:
+    - email
+    - name
+    type: object
+  api.UserResponse:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  currency.CreateCurrencyRequest:
+    properties:
+      code:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        type: string
+      symbol:
+        type: string
+    required:
+    - code
+    - name
+    - symbol
+    type: object
+  currency.CurrencyResponse:
+    properties:
+      code:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        type: string
+      symbol:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  currency.UpdateCurrencyRequest:
+    properties:
+      code:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        type: string
+      symbol:
+        type: string
+    required:
+    - code
+    - name
+    - symbol
+    type: object
+  health.HealthResponse:
+    properties:
+      environment:
+        type: string
+      guid:
+        type: string
+      info:
+        $ref: '#/definitions/health.InfoData'
+      status:
+        type: string
+      timestamp:
+        type: string
+      version:
+        type: string
+    type: object
+  health.InfoData:
+    properties:
+      databaseOK:
+        type: boolean
+      goVersion:
+        type: string
+      uptime:
+        type: string
+    type: object
+  plan.CreatePlanRequest:
+    properties:
+      currency_id:
+        type: string
+      description:
+        type: string
+      features:
+        items:
+          $ref: '#/definitions/plan.PlanFeatureRequest'
+        type: array
+      interval:
+        type: string
+      is_active:
+        type: boolean
+      is_public:
+        type: boolean
+      name:
+        type: string
+      price:
+        type: number
+      sort_order:
+        type: integer
+    required:
+    - currency_id
+    - description
+    - interval
+    - name
+    type: object
+  plan.PlanFeatureRequest:
+    properties:
+      description:
+        type: string
+      included:
+        type: boolean
+      name:
+        type: string
+      value:
+        type: string
+    type: object
+  plan.PlanFeatureResponse:
+    properties:
+      description:
+        type: string
+      included:
+        type: boolean
+      name:
+        type: string
+      value:
+        type: string
+    type: object
+  plan.PlanResponse:
+    properties:
+      created_at:
+        type: string
+      currency_id:
+        type: string
+      description:
+        type: string
+      features:
+        items:
+          $ref: '#/definitions/plan.PlanFeatureResponse'
+        type: array
+      id:
+        type: string
+      interval:
+        type: string
+      is_active:
+        type: boolean
+      is_public:
+        type: boolean
+      name:
+        type: string
+      price:
+        type: number
+      sort_order:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  plan.UpdatePlanRequest:
+    properties:
+      currency_id:
+        type: string
+      description:
+        type: string
+      features:
+        items:
+          $ref: '#/definitions/plan.PlanFeatureRequest'
+        type: array
+      interval:
+        type: string
+      is_active:
+        type: boolean
+      is_public:
+        type: boolean
+      name:
+        type: string
+      price:
+        type: number
+      sort_order:
+        type: integer
+    required:
+    - currency_id
+    - description
+    - interval
+    - name
+    type: object
+  user_subscription.CreateSubscriptionRequest:
+    properties:
+      end_date:
+        type: string
+      metadata:
+        additionalProperties:
+          type: string
+        type: object
+      payment_method_id:
+        type: string
+      plan_id:
+        type: string
+      start_date:
+        type: string
+    required:
+    - plan_id
+    type: object
+  user_subscription.SubscriptionResponse:
+    properties:
+      cancellation_date:
+        type: string
+      created_at:
+        type: string
+      end_date:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      last_payment_date:
+        type: string
+      metadata:
+        additionalProperties:
+          type: string
+        type: object
+      next_payment_attempt:
+        type: string
+      payment_method_id:
+        type: string
+      plan_id:
+        type: string
+      renewal_date:
+        type: string
+      start_date:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@miapp.com
+    name: API Support
+    url: http://www.miapp.com/support
+  description: API para la aplicación de finanzas personales
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Mi App Backend API
+  version: "1.0"
+paths:
+  /admin/subscriptions:
+    get:
+      consumes:
+      - application/json
+      description: Retorna todas las suscripciones (solo para administradores)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/user_subscription.SubscriptionResponse'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Obtener todas las suscripciones
+      tags:
+      - subscriptions
+  /admin/subscriptions/status/{status}:
+    get:
+      consumes:
+      - application/json
+      description: Retorna las suscripciones filtradas por estado (solo para administradores)
+      parameters:
+      - description: Estado de suscripción (active, expired, cancelled)
+        in: path
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/user_subscription.SubscriptionResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Obtener suscripciones por estado
+      tags:
+      - subscriptions
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns a JWT token
+      parameters:
+      - description: Access credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/api.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Login
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Registra un nuevo usuario en el sistema
+      parameters:
+      - description: Datos del usuario
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/api.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/api.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Registrar un nuevo usuario
+      tags:
+      - auth
+  /currencies:
+    get:
+      consumes:
+      - application/json
+      description: Retorna una lista de todas las monedas disponibles en el sistema
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/currency.CurrencyResponse'
+            type: array
+      summary: Obtener todas las monedas
+      tags:
+      - currencies
+    post:
+      consumes:
+      - application/json
+      description: Crea una nueva moneda con los datos proporcionados
+      parameters:
+      - description: Datos de la moneda
+        in: body
+        name: currency
+        required: true
+        schema:
+          $ref: '#/definitions/currency.CreateCurrencyRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/currency.CurrencyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Crear una nueva moneda
+      tags:
+      - currencies
+  /currencies/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Elimina una moneda basado en su ID
+      parameters:
+      - description: ID de la moneda
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Eliminar una moneda
+      tags:
+      - currencies
+    get:
+      consumes:
+      - application/json
+      description: Retorna los detalles de una moneda basado en su ID
+      parameters:
+      - description: ID de la moneda
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/currency.CurrencyResponse'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Obtener una moneda por ID
+      tags:
+      - currencies
+    put:
+      consumes:
+      - application/json
+      description: Actualiza los datos de una moneda existente basado en su ID
+      parameters:
+      - description: ID de la moneda
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Datos actualizados de la moneda
+        in: body
+        name: currency
+        required: true
+        schema:
+          $ref: '#/definitions/currency.UpdateCurrencyRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/currency.CurrencyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Actualizar una moneda existente
+      tags:
+      - currencies
+  /currencies/active:
+    get:
+      consumes:
+      - application/json
+      description: Retorna una lista de las monedas activas en el sistema
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/currency.CurrencyResponse'
+            type: array
+      summary: Obtener monedas activas
+      tags:
+      - currencies
+  /currencies/code/{code}:
+    get:
+      consumes:
+      - application/json
+      description: Retorna los detalles de una moneda basado en su código
+      parameters:
+      - description: Código de la moneda
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/currency.CurrencyResponse'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Obtener una moneda por código
+      tags:
+      - currencies
+  /health:
+    get:
+      consumes:
+      - application/json
+      description: Returns the health status of the API and its dependencies
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/health.HealthResponse'
+      summary: Get API health status
+      tags:
+      - health
+  /health/check:
+    get:
+      consumes:
+      - application/json
+      description: Simple health check that returns 200 OK if the API is running
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Quick health check endpoint
+      tags:
+      - health
+  /plans:
+    get:
+      consumes:
+      - application/json
+      description: Retorna una lista de todos los planes disponibles en el sistema
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/plan.PlanResponse'
+            type: array
+      summary: Obtener todos los planes
+      tags:
+      - plans
+    post:
+      consumes:
+      - application/json
+      description: Crea un nuevo plan con los datos proporcionados
+      parameters:
+      - description: Datos del plan
+        in: body
+        name: plan
+        required: true
+        schema:
+          $ref: '#/definitions/plan.CreatePlanRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/plan.PlanResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Crear un nuevo plan
+      tags:
+      - plans
+  /plans/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Elimina un plan basado en su ID
+      parameters:
+      - description: ID del plan
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Eliminar un plan
+      tags:
+      - plans
+    get:
+      consumes:
+      - application/json
+      description: Retorna los detalles de un plan basado en su ID
+      parameters:
+      - description: ID del plan
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/plan.PlanResponse'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Obtener un plan por ID
+      tags:
+      - plans
+    put:
+      consumes:
+      - application/json
+      description: Actualiza los datos de un plan existente basado en su ID
+      parameters:
+      - description: ID del plan
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Datos actualizados del plan
+        in: body
+        name: plan
+        required: true
+        schema:
+          $ref: '#/definitions/plan.UpdatePlanRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/plan.PlanResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Actualizar un plan existente
+      tags:
+      - plans
+  /plans/active:
+    get:
+      consumes:
+      - application/json
+      description: Retorna una lista de los planes activos en el sistema
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/plan.PlanResponse'
+            type: array
+      summary: Obtener planes activos
+      tags:
+      - plans
+  /plans/public:
+    get:
+      consumes:
+      - application/json
+      description: Retorna una lista de los planes públicos disponibles en el sistema
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/plan.PlanResponse'
+            type: array
+      summary: Obtener planes públicos
+      tags:
+      - plans
+  /subscriptions:
+    get:
+      consumes:
+      - application/json
+      description: Retorna las suscripciones del usuario autenticado
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/user_subscription.SubscriptionResponse'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Obtener suscripciones del usuario
+      tags:
+      - subscriptions
+    post:
+      consumes:
+      - application/json
+      description: Crea una nueva suscripción para el usuario autenticado
+      parameters:
+      - description: Datos de la suscripción
+        in: body
+        name: subscription
+        required: true
+        schema:
+          $ref: '#/definitions/user_subscription.CreateSubscriptionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/user_subscription.SubscriptionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Crear una suscripción
+      tags:
+      - subscriptions
+  /subscriptions/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retorna los detalles de una suscripción específica
+      parameters:
+      - description: ID de la suscripción
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user_subscription.SubscriptionResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Obtener una suscripción
+      tags:
+      - subscriptions
+  /subscriptions/{id}/cancel:
+    put:
+      consumes:
+      - application/json
+      description: Cancela una suscripción activa
+      parameters:
+      - description: ID de la suscripción
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user_subscription.SubscriptionResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Cancelar una suscripción
+      tags:
+      - subscriptions
+  /subscriptions/{id}/renew:
+    put:
+      consumes:
+      - application/json
+      description: Renueva una suscripción expirada o cancelada
+      parameters:
+      - description: ID de la suscripción
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user_subscription.SubscriptionResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Renovar una suscripción
+      tags:
+      - subscriptions
+  /users/change-password:
+    put:
+      consumes:
+      - application/json
+      description: Changes the authenticated user's password
+      parameters:
+      - description: Password data
+        in: body
+        name: passwordData
+        required: true
+        schema:
+          $ref: '#/definitions/api.ChangePasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Change password
+      tags:
+      - users
+  /users/me:
+    get:
+      consumes:
+      - application/json
+      description: Retorna los datos del usuario autenticado
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.UserResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Obtener usuario actual
+      tags:
+      - users
+  /users/update:
+    put:
+      consumes:
+      - application/json
+      description: Updates the authenticated user's information
+      parameters:
+      - description: Updated user data
+        in: body
+        name: userData
+        required: true
+        schema:
+          $ref: '#/definitions/api.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Update user
+      tags:
+      - users
+schemes:
+- http
+- https
+securityDefinitions:
+  Bearer:
+    description: 'Ingrese el token con el prefijo Bearer, por ejemplo: ''Bearer abcde12345'''
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

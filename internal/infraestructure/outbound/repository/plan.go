@@ -9,7 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"mi-app-backend/internal/domain"
+	"MyMoneyBackend/internal/domain"
 )
 
 // PlanRepository implementa el puerto app.PlanRepository

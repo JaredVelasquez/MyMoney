@@ -1,7 +1,7 @@
-# Makefile para mi-app-backend
+# Makefile para MyMoneyBackend
 
 # Variables
-APP_NAME=mi-app-backend
+APP_NAME=MyMoneyBackend
 GO=$(shell which go)
 GOFLAGS=-v
 BINARY_NAME=main

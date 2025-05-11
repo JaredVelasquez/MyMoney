@@ -7,25 +7,25 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 
-	"mi-app-backend/db/config"
-	"mi-app-backend/internal/application/auth"
-	categoryService "mi-app-backend/internal/application/category"
-	paymentMethodService "mi-app-backend/internal/application/paymentmethod"
-	transactionService "mi-app-backend/internal/application/transaction"
-	userService "mi-app-backend/internal/application/user"
-	"mi-app-backend/internal/domain/ports/app"
-	"mi-app-backend/internal/infraestructure/inbound/httprest/routers"
-	"mi-app-backend/internal/infraestructure/outbound/repository"
+	"MyMoneyBackend/db/config"
+	"MyMoneyBackend/internal/application/auth"
+	categoryService "MyMoneyBackend/internal/application/category"
+	paymentMethodService "MyMoneyBackend/internal/application/paymentmethod"
+	transactionService "MyMoneyBackend/internal/application/transaction"
+	userService "MyMoneyBackend/internal/application/user"
+	"MyMoneyBackend/internal/domain/ports/app"
+	"MyMoneyBackend/internal/infraestructure/inbound/httprest/routers"
+	"MyMoneyBackend/internal/infraestructure/outbound/repository"
 )
 
-// @title Mi App Backend API
+// @title MyMoney Backend API
 // @version 1.0
 // @description API para la aplicación de finanzas personales
 // @termsOfService http://swagger.io/terms/
 
 // @contact.name API Support
-// @contact.url http://www.miapp.com/support
-// @contact.email support@miapp.com
+// @contact.url http://www.mymoney.com/support
+// @contact.email support@mymoney.com
 
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html

@@ -9,7 +9,9 @@ import (
 type TransactionType string
 
 const (
-	TransactionTypeIncome  TransactionType = "INCOME"
+	// TransactionTypeIncome representa una transacción de ingreso
+	TransactionTypeIncome TransactionType = "INCOME"
+	// TransactionTypeExpense representa una transacción de gasto
 	TransactionTypeExpense TransactionType = "EXPENSE"
 )
 
@@ -20,11 +22,11 @@ type Transaction struct {
 	Description     string          `json:"description"`
 	Date            time.Time       `json:"date"`
 	CategoryID      string          `json:"category_id"`
+	Type            TransactionType `json:"type"`
 	PaymentMethodID string          `json:"payment_method_id"`
 	UserID          string          `json:"user_id"`
 	CreatedAt       time.Time       `json:"created_at"`
 	UpdatedAt       time.Time       `json:"updated_at"`
-	Type            TransactionType `json:"type"`
 	CurrencyID      string          `json:"currency_id"`
 }
 
@@ -41,6 +43,12 @@ func (t *Transaction) Validate() error {
 	}
 	if t.Date.IsZero() {
 		return errors.New("la fecha no puede estar vacía")
+	}
+	if t.Type == "" {
+		return errors.New("el tipo de transacción no puede estar vacío")
+	}
+	if t.Type != TransactionTypeIncome && t.Type != TransactionTypeExpense {
+		return errors.New("tipo de transacción inválido")
 	}
 	return nil
 }

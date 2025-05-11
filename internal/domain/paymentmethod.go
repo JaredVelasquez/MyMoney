@@ -25,3 +25,26 @@ func (p *PaymentMethod) Validate() error {
 	}
 	return nil
 }
+
+// CreatePaymentMethodRequest representa la solicitud para crear un método de pago
+type CreatePaymentMethodRequest struct {
+	Name        string `json:"name" binding:"required"`
+	Description string `json:"description"`
+}
+
+// UpdatePaymentMethodRequest representa la solicitud para actualizar un método de pago
+type UpdatePaymentMethodRequest struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	IsActive    bool   `json:"is_active"`
+}
+
+// PaymentMethodResponse representa la respuesta para un método de pago
+type PaymentMethodResponse struct {
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	IsActive    bool      `json:"is_active"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}

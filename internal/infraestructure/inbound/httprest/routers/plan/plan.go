@@ -3,8 +3,8 @@ package plan
 import (
 	"github.com/gin-gonic/gin"
 
-	handler "mi-app-backend/internal/infraestructure/inbound/httprest/handlers/plan"
-	middleware "mi-app-backend/internal/infraestructure/inbound/httprest/middlewares"
+	handler "MyMoneyBackend/internal/infraestructure/inbound/httprest/handlers/plan"
+	middleware "MyMoneyBackend/internal/infraestructure/inbound/httprest/middlewares"
 )
 
 // SetupPlanRoutes configura las rutas relacionadas con los planes

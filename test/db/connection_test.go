@@ -3,7 +3,7 @@ package db
 import (
 	"testing"
 
-	"mi-app-backend/db/config"
+	"MyMoneyBackend/db/config"
 )
 
 func TestDatabaseConnection(t *testing.T) {

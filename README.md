@@ -1,6 +1,6 @@
-# mi-app-backend
+# MyMoneyBackend
 
-API backend para la aplicación Mi App, que proporciona gestión de usuarios, suscripciones, monedas y planes.
+API backend para la aplicación MyMoney, que proporciona gestión de usuarios, suscripciones, monedas y planes.
 
 ## Requisitos
 
@@ -13,8 +13,8 @@ API backend para la aplicación Mi App, que proporciona gestión de usuarios, su
 Clone el repositorio:
 
 ```bash
-git clone https://github.com/yourusername/mi-app-backend.git
-cd mi-app-backend
+git clone https://github.com/yourusername/MyMoneyBackend.git
+cd MyMoneyBackend
 ```
 
 Instale las dependencias:
@@ -58,7 +58,7 @@ make swagger
 ## Estructura del Proyecto
 
 ```
-mi-app-backend/
+MyMoneyBackend/
 ├── cmd/                # Punto de entrada de la aplicación
 ├── internal/           # Código principal de la aplicación
 │   ├── application/    # Casos de uso y lógica de aplicación

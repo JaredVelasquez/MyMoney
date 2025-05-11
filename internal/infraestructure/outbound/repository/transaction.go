@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"time"
 
-	"mi-app-backend/internal/domain"
+	"MyMoneyBackend/internal/domain"
 )
 
 // TransactionRepository implements domain.TransactionRepository for PostgreSQL
@@ -64,7 +64,7 @@ func (r *TransactionRepository) Create(ctx context.Context, transaction *domain.
 func (r *TransactionRepository) GetByID(ctx context.Context, id string) (*domain.Transaction, error) {
 	query := `
 		SELECT 
-			id, user_id, amount, description, category_id, type, 
+			id, user_id, amount, description, category_id, type,
 			payment_method_id, currency_id, date, created_at, updated_at
 		FROM transactions
 		WHERE id = $1
@@ -99,7 +99,7 @@ func (r *TransactionRepository) GetByID(ctx context.Context, id string) (*domain
 func (r *TransactionRepository) GetByUserID(ctx context.Context, userID string) ([]*domain.Transaction, error) {
 	query := `
 		SELECT 
-			id, user_id, amount, description, category_id, type, 
+			id, user_id, amount, description, category_id, type,
 			payment_method_id, currency_id, date, created_at, updated_at
 		FROM transactions
 		WHERE user_id = $1
@@ -119,7 +119,7 @@ func (r *TransactionRepository) GetByUserID(ctx context.Context, userID string) 
 func (r *TransactionRepository) GetByCategoryID(ctx context.Context, categoryID string) ([]*domain.Transaction, error) {
 	query := `
 		SELECT 
-			id, user_id, amount, description, category_id, type, 
+			id, user_id, amount, description, category_id, type,
 			payment_method_id, currency_id, date, created_at, updated_at
 		FROM transactions
 		WHERE category_id = $1
@@ -139,7 +139,7 @@ func (r *TransactionRepository) GetByCategoryID(ctx context.Context, categoryID 
 func (r *TransactionRepository) GetByDateRange(ctx context.Context, userID string, startDate, endDate time.Time) ([]*domain.Transaction, error) {
 	query := `
 		SELECT 
-			id, user_id, amount, description, category_id, type, 
+			id, user_id, amount, description, category_id, type,
 			payment_method_id, currency_id, date, created_at, updated_at
 		FROM transactions
 		WHERE user_id = $1 AND date BETWEEN $2 AND $3
@@ -159,7 +159,7 @@ func (r *TransactionRepository) GetByDateRange(ctx context.Context, userID strin
 func (r *TransactionRepository) Update(ctx context.Context, transaction *domain.Transaction) error {
 	query := `
 		UPDATE transactions
-		SET amount = $1, description = $2, category_id = $3, type = $4, 
+		SET amount = $1, description = $2, category_id = $3, type = $4,
 			payment_method_id = $5, currency_id = $6, date = $7, updated_at = $8
 		WHERE id = $9 AND user_id = $10
 	`

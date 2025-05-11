@@ -9,7 +9,7 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	_ "mi-app-backend/internal/infraestructure/inbound/httprest/docs" // Importar documentación generada
+	_ "MyMoneyBackend/internal/infraestructure/inbound/httprest/docs" // Importar documentación generada
 )
 
 // SetupSwaggerRoutes configura las rutas para la documentación Swagger
@@ -43,33 +43,40 @@ func SetupSwaggerRoutes(r *gin.Engine) {
 	})
 
 	// Configurar redirecciones para que funcionen las operaciones desde Swagger UI
-	// Redireccionar las peticiones a la raíz hacia /api para que coincidan con la implementación
 	r.NoRoute(func(c *gin.Context) {
 		path := c.Request.URL.Path
 		method := c.Request.Method
 
 		log.Printf("NoRoute handler: %s %s", method, path)
 
-		// Verificar si es una ruta documentada en Swagger pero inexistente en la raíz
-		if method == "GET" || method == "POST" || method == "PUT" || method == "DELETE" {
-			// Si la ruta no comienza con /api, intentamos redirigir a /api/...
-			if len(path) > 0 && path[0] == '/' && (len(path) == 1 || path[1:4] != "api") {
-				apiPath := "/api" + path
-				log.Printf("Redirigiendo a: %s", apiPath)
+		// Verificar si la ruta ya comienza con /api para no duplicarlo
+		if strings.HasPrefix(path, "/api/") {
+			// La ruta ya tiene el prefijo /api, pero no se encontró
+			// Esto probablemente significa que la ruta no existe realmente
+			c.JSON(404, gin.H{
+				"error":      fmt.Sprintf("Ruta no encontrada: %s %s", method, path),
+				"suggestion": "Verifica que la ruta sea correcta y que el método HTTP sea el adecuado",
+			})
+			return
+		}
 
-				// Modificar la URL de la petición para que apunte a /api/...
-				c.Request.URL.Path = apiPath
+		// Si la ruta no comienza con /api, intentamos redirigirla
+		if len(path) > 0 && path[0] == '/' {
+			apiPath := "/api" + path
+			log.Printf("Redirigiendo a: %s", apiPath)
 
-				// Intentar manejar la petición con la nueva ruta
-				r.HandleContext(c)
-				return
-			}
+			// Modificar la URL de la petición para que apunte a /api/...
+			c.Request.URL.Path = apiPath
+
+			// Intentar manejar la petición con la nueva ruta
+			r.HandleContext(c)
+			return
 		}
 
 		// Si no se ha manejado, mostrar un mensaje de error personalizado
 		c.JSON(404, gin.H{
 			"error":      fmt.Sprintf("Ruta no encontrada: %s %s", method, path),
-			"suggestion": "Intenta acceder a través de /api" + path,
+			"suggestion": "Verifica la documentación de la API para conocer las rutas disponibles",
 		})
 	})
 }

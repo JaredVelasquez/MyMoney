@@ -1,0 +1,307 @@
+paths:
+  /api/transactions:
+    get:
+      tags:
+        - transactions
+      summary: Obtener todas las transacciones del usuario
+      description: Retorna todas las transacciones del usuario autenticado
+      operationId: getUserTransactions
+      produces:
+        - application/json
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: Operación exitosa
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/MyMoneyBackend_internal_domain.Transaction'
+        401:
+          description: No autorizado
+        500:
+          description: Error del servidor
+
+    post:
+      tags:
+        - transactions
+      summary: Crear una nueva transacción
+      description: Crea una nueva transacción para el usuario autenticado
+      operationId: createTransaction
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      security:
+        - Bearer: []
+      parameters:
+        - in: body
+          name: transaction
+          description: Datos de la transacción a crear
+          required: true
+          schema:
+            $ref: '#/definitions/MyMoneyBackend_internal_domain.CreateTransactionRequest'
+      responses:
+        201:
+          description: Transacción creada exitosamente
+          schema:
+            $ref: '#/definitions/MyMoneyBackend_internal_domain.Transaction'
+        400:
+          description: Datos inválidos
+        401:
+          description: No autorizado
+        500:
+          description: Error del servidor
+
+  /api/transactions/{id}:
+    get:
+      tags:
+        - transactions
+      summary: Obtener una transacción específica
+      description: Retorna una transacción específica por su ID
+      operationId: getTransaction
+      produces:
+        - application/json
+      security:
+        - Bearer: []
+      parameters:
+        - name: id
+          in: path
+          description: ID de la transacción
+          required: true
+          type: string
+      responses:
+        200:
+          description: Operación exitosa
+          schema:
+            $ref: '#/definitions/MyMoneyBackend_internal_domain.Transaction'
+        401:
+          description: No autorizado
+        404:
+          description: Transacción no encontrada
+        500:
+          description: Error del servidor
+
+    put:
+      tags:
+        - transactions
+      summary: Actualizar una transacción
+      description: Actualiza una transacción existente
+      operationId: updateTransaction
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      security:
+        - Bearer: []
+      parameters:
+        - name: id
+          in: path
+          description: ID de la transacción
+          required: true
+          type: string
+        - in: body
+          name: transaction
+          description: Datos de la transacción a actualizar
+          required: true
+          schema:
+            $ref: '#/definitions/MyMoneyBackend_internal_domain.UpdateTransactionRequest'
+      responses:
+        200:
+          description: Transacción actualizada exitosamente
+          schema:
+            $ref: '#/definitions/MyMoneyBackend_internal_domain.Transaction'
+        400:
+          description: Datos inválidos
+        401:
+          description: No autorizado
+        404:
+          description: Transacción no encontrada
+        500:
+          description: Error del servidor
+
+    delete:
+      tags:
+        - transactions
+      summary: Eliminar una transacción
+      description: Elimina una transacción existente
+      operationId: deleteTransaction
+      security:
+        - Bearer: []
+      parameters:
+        - name: id
+          in: path
+          description: ID de la transacción
+          required: true
+          type: string
+      responses:
+        200:
+          description: Transacción eliminada exitosamente
+        401:
+          description: No autorizado
+        404:
+          description: Transacción no encontrada
+        500:
+          description: Error del servidor
+
+  /api/transactions/category/{categoryId}:
+    get:
+      tags:
+        - transactions
+      summary: Obtener transacciones por categoría
+      description: Retorna todas las transacciones de una categoría específica
+      operationId: getTransactionsByCategory
+      produces:
+        - application/json
+      security:
+        - Bearer: []
+      parameters:
+        - name: categoryId
+          in: path
+          description: ID de la categoría
+          required: true
+          type: string
+      responses:
+        200:
+          description: Operación exitosa
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/MyMoneyBackend_internal_domain.Transaction'
+        401:
+          description: No autorizado
+        404:
+          description: Categoría no encontrada
+        500:
+          description: Error del servidor
+
+  /api/transactions/date-range:
+    get:
+      tags:
+        - transactions
+      summary: Obtener transacciones por rango de fechas
+      description: Retorna todas las transacciones dentro de un rango de fechas
+      operationId: getTransactionsByDateRange
+      produces:
+        - application/json
+      security:
+        - Bearer: []
+      parameters:
+        - name: start_date
+          in: query
+          description: Fecha de inicio (formato YYYY-MM-DD)
+          required: true
+          type: string
+        - name: end_date
+          in: query
+          description: Fecha de fin (formato YYYY-MM-DD)
+          required: true
+          type: string
+      responses:
+        200:
+          description: Operación exitosa
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/MyMoneyBackend_internal_domain.Transaction'
+        400:
+          description: Parámetros inválidos
+        401:
+          description: No autorizado
+        500:
+          description: Error del servidor
+
+definitions:
+  MyMoneyBackend_internal_domain.Transaction:
+    type: object
+    properties:
+      id:
+        type: string
+      amount:
+        type: number
+        format: float
+      description:
+        type: string
+      date:
+        type: string
+        format: date-time
+      category_id:
+        type: string
+      type:
+        type: string
+        enum: [INCOME, EXPENSE]
+      payment_method_id:
+        type: string
+      user_id:
+        type: string
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      currency_id:
+        type: string
+
+  MyMoneyBackend_internal_domain.CreateTransactionRequest:
+    type: object
+    required:
+      - amount
+      - category_id
+      - type
+      - currency_id
+      - date
+    properties:
+      amount:
+        type: number
+        format: float
+        minimum: 0
+      description:
+        type: string
+      category_id:
+        type: string
+      type:
+        type: string
+        enum: [INCOME, EXPENSE]
+      payment_method_id:
+        type: string
+      currency_id:
+        type: string
+      date:
+        type: string
+        format: date-time
+
+  MyMoneyBackend_internal_domain.UpdateTransactionRequest:
+    type: object
+    properties:
+      amount:
+        type: number
+        format: float
+        minimum: 0
+      description:
+        type: string
+      category_id:
+        type: string
+      type:
+        type: string
+        enum: [INCOME, EXPENSE]
+      payment_method_id:
+        type: string
+      currency_id:
+        type: string
+      date:
+        type: string
+        format: date-time
+
+  MyMoneyBackend_internal_domain.DateRangeRequest:
+    type: object
+    required:
+      - start_date
+      - end_date
+    properties:
+      start_date:
+        type: string
+        format: date
+      end_date:
+        type: string
+        format: date 

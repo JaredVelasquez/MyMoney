@@ -119,7 +119,7 @@ type CreateSubscriptionRequest struct {
 }
 
 // UpdatePaymentMethodRequest representa la solicitud para actualizar un método de pago
-type UpdatePaymentMethodRequest struct {
+type UpdateSubscriptionPaymentMethodRequest struct {
 	PaymentMethodID string `json:"payment_method_id" binding:"required"`
 }
 

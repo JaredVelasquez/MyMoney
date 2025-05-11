@@ -10,7 +10,7 @@ import (
 	"os"
 	"time"
 
-	"mi-app-backend/db/config"
+	"MyMoneyBackend/db/config"
 
 	"github.com/joho/godotenv"
 )

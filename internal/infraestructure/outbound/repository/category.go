@@ -6,7 +6,7 @@ import (
 	"errors"
 	"time"
 
-	"mi-app-backend/internal/domain"
+	"MyMoneyBackend/internal/domain"
 
 	"github.com/google/uuid"
 )
@@ -36,8 +36,8 @@ func (r *CategoryRepository) Create(ctx context.Context, category *domain.Catego
 	category.UpdatedAt = now
 
 	query := `
-		INSERT INTO categories (id, name, description, type, color, icon, user_id, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+		INSERT INTO categories (id, name, description, color, icon, user_id, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 	`
 
 	_, err := r.db.ExecContext(
@@ -46,7 +46,6 @@ func (r *CategoryRepository) Create(ctx context.Context, category *domain.Catego
 		category.ID,
 		category.Name,
 		category.Description,
-		category.Type,
 		category.Color,
 		category.Icon,
 		category.UserID,
@@ -60,7 +59,7 @@ func (r *CategoryRepository) Create(ctx context.Context, category *domain.Catego
 // GetByID obtiene una categoría por su ID
 func (r *CategoryRepository) GetByID(ctx context.Context, id string) (*domain.Category, error) {
 	query := `
-		SELECT id, name, description, type, color, icon, user_id, created_at, updated_at
+		SELECT id, name, description, color, icon, user_id, created_at, updated_at
 		FROM categories
 		WHERE id = $1
 	`
@@ -70,7 +69,6 @@ func (r *CategoryRepository) GetByID(ctx context.Context, id string) (*domain.Ca
 		&category.ID,
 		&category.Name,
 		&category.Description,
-		&category.Type,
 		&category.Color,
 		&category.Icon,
 		&category.UserID,
@@ -91,7 +89,7 @@ func (r *CategoryRepository) GetByID(ctx context.Context, id string) (*domain.Ca
 // GetByUserID obtiene todas las categorías de un usuario
 func (r *CategoryRepository) GetByUserID(ctx context.Context, userID string) ([]*domain.Category, error) {
 	query := `
-		SELECT id, name, description, type, color, icon, user_id, created_at, updated_at
+		SELECT id, name, description, color, icon, user_id, created_at, updated_at
 		FROM categories
 		WHERE user_id = $1
 		ORDER BY name ASC
@@ -110,48 +108,6 @@ func (r *CategoryRepository) GetByUserID(ctx context.Context, userID string) ([]
 			&category.ID,
 			&category.Name,
 			&category.Description,
-			&category.Type,
-			&category.Color,
-			&category.Icon,
-			&category.UserID,
-			&category.CreatedAt,
-			&category.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		categories = append(categories, &category)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return categories, nil
-}
-
-// GetByType obtiene todas las categorías de un usuario por tipo
-func (r *CategoryRepository) GetByType(ctx context.Context, userID string, categoryType domain.CategoryType) ([]*domain.Category, error) {
-	query := `
-		SELECT id, name, description, type, color, icon, user_id, created_at, updated_at
-		FROM categories
-		WHERE user_id = $1 AND type = $2
-		ORDER BY name ASC
-	`
-
-	rows, err := r.db.QueryContext(ctx, query, userID, categoryType)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var categories []*domain.Category
-	for rows.Next() {
-		var category domain.Category
-		if err := rows.Scan(
-			&category.ID,
-			&category.Name,
-			&category.Description,
-			&category.Type,
 			&category.Color,
 			&category.Icon,
 			&category.UserID,
@@ -176,8 +132,8 @@ func (r *CategoryRepository) Update(ctx context.Context, category *domain.Catego
 
 	query := `
 		UPDATE categories
-		SET name = $1, description = $2, type = $3, color = $4, icon = $5, updated_at = $6
-		WHERE id = $7
+		SET name = $1, description = $2, color = $3, icon = $4, updated_at = $5
+		WHERE id = $6
 	`
 
 	_, err := r.db.ExecContext(
@@ -185,7 +141,6 @@ func (r *CategoryRepository) Update(ctx context.Context, category *domain.Catego
 		query,
 		category.Name,
 		category.Description,
-		category.Type,
 		category.Color,
 		category.Icon,
 		category.UpdatedAt,

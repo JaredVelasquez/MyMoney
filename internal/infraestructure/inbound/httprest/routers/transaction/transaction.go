@@ -1,8 +1,8 @@
 package transaction
 
 import (
-	handler "mi-app-backend/internal/infraestructure/inbound/httprest/handlers/transaction"
-	middleware "mi-app-backend/internal/infraestructure/inbound/httprest/middlewares"
+	handler "MyMoneyBackend/internal/infraestructure/inbound/httprest/handlers/transaction"
+	middleware "MyMoneyBackend/internal/infraestructure/inbound/httprest/middlewares"
 
 	"github.com/gin-gonic/gin"
 )

@@ -7,8 +7,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"mi-app-backend/internal/domain"
-	"mi-app-backend/internal/domain/ports/app"
+	"MyMoneyBackend/internal/domain"
+	"MyMoneyBackend/internal/domain/ports/app"
 )
 
 // Service encapsula la lógica de negocio relacionada con las monedas

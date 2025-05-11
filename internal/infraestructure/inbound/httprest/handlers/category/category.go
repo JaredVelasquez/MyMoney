@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"mi-app-backend/internal/application/category"
-	"mi-app-backend/internal/domain"
+	"MyMoneyBackend/internal/application/category"
+	"MyMoneyBackend/internal/domain"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,6 +23,17 @@ func NewCategoryHandler(categoryService *category.Service) *CategoryHandler {
 }
 
 // CreateCategory handles category creation
+// @Summary Crear una nueva categoría
+// @Description Crea una nueva categoría para el usuario autenticado
+// @Tags categories
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Param category body domain.CreateCategoryRequest true "Datos de la categoría a crear"
+// @Success 201 {object} domain.Category
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/categories [post]
 func (h *CategoryHandler) CreateCategory(c *gin.Context) {
 	userID := c.GetString("user_id")
 	if userID == "" {
@@ -40,7 +51,6 @@ func (h *CategoryHandler) CreateCategory(c *gin.Context) {
 		context.Background(),
 		req.Name,
 		req.Description,
-		req.Type,
 		req.Icon,
 		req.Color,
 		userID,
@@ -54,6 +64,15 @@ func (h *CategoryHandler) CreateCategory(c *gin.Context) {
 }
 
 // GetUserCategories returns all categories for the current user
+// @Summary Obtener todas las categorías del usuario
+// @Description Retorna todas las categorías del usuario autenticado
+// @Tags categories
+// @Produce json
+// @Security Bearer
+// @Success 200 {array} domain.Category
+// @Failure 401 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /api/categories [get]
 func (h *CategoryHandler) GetUserCategories(c *gin.Context) {
 	userID := c.GetString("user_id")
 	if userID == "" {
@@ -71,6 +90,17 @@ func (h *CategoryHandler) GetUserCategories(c *gin.Context) {
 }
 
 // GetCategory returns a specific category
+// @Summary Obtener una categoría específica
+// @Description Retorna una categoría específica por su ID
+// @Tags categories
+// @Produce json
+// @Security Bearer
+// @Param id path string true "ID de la categoría"
+// @Success 200 {object} domain.Category
+// @Failure 401 {object} map[string]string
+// @Failure 403 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /api/categories/{id} [get]
 func (h *CategoryHandler) GetCategory(c *gin.Context) {
 	userID := c.GetString("user_id")
 	if userID == "" {
@@ -100,6 +130,19 @@ func (h *CategoryHandler) GetCategory(c *gin.Context) {
 }
 
 // UpdateCategory updates a category
+// @Summary Actualizar una categoría
+// @Description Actualiza una categoría existente
+// @Tags categories
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Param id path string true "ID de la categoría"
+// @Param category body domain.UpdateCategoryRequest true "Datos de la categoría a actualizar"
+// @Success 200 {object} domain.Category
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /api/categories/{id} [put]
 func (h *CategoryHandler) UpdateCategory(c *gin.Context) {
 	userID := c.GetString("user_id")
 	if userID == "" {
@@ -124,7 +167,6 @@ func (h *CategoryHandler) UpdateCategory(c *gin.Context) {
 		categoryID,
 		req.Name,
 		req.Description,
-		req.Type,
 		req.Icon,
 		req.Color,
 	)
@@ -137,6 +179,15 @@ func (h *CategoryHandler) UpdateCategory(c *gin.Context) {
 }
 
 // DeleteCategory deletes a category
+// @Summary Eliminar una categoría
+// @Description Elimina una categoría existente
+// @Tags categories
+// @Security Bearer
+// @Param id path string true "ID de la categoría"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/categories/{id} [delete]
 func (h *CategoryHandler) DeleteCategory(c *gin.Context) {
 	userID := c.GetString("user_id")
 	if userID == "" {
@@ -157,33 +208,4 @@ func (h *CategoryHandler) DeleteCategory(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "category deleted successfully"})
-}
-
-// GetCategoriesByType returns all categories of a specific type
-func (h *CategoryHandler) GetCategoriesByType(c *gin.Context) {
-	userID := c.GetString("user_id")
-	if userID == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
-
-	typeStr := c.Param("type")
-	if typeStr == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "category type is required"})
-		return
-	}
-
-	categoryType := domain.CategoryType(typeStr)
-	if categoryType != domain.CategoryTypeIncome && categoryType != domain.CategoryTypeExpense {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid category type"})
-		return
-	}
-
-	categories, err := h.categoryService.GetCategoriesByType(context.Background(), userID, categoryType)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "error retrieving categories"})
-		return
-	}
-
-	c.JSON(http.StatusOK, categories)
 }

@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"mi-app-backend/internal/domain"
+	"MyMoneyBackend/internal/domain"
 )
 
 // UserSubscriptionRepository es la interfaz que define los métodos para el repositorio de suscripciones

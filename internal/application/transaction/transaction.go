@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"mi-app-backend/internal/domain"
-	"mi-app-backend/internal/domain/ports/app"
+	"MyMoneyBackend/internal/domain"
+	"MyMoneyBackend/internal/domain/ports/app"
 
 	"github.com/google/uuid"
 )
@@ -23,15 +23,17 @@ func NewService(repo app.TransactionRepository) *Service {
 }
 
 // CreateTransaction crea una nueva transacción
-func (s *Service) CreateTransaction(ctx context.Context, amount float64, description string, date time.Time, categoryID, paymentMethodID, userID string) (*domain.Transaction, error) {
+func (s *Service) CreateTransaction(ctx context.Context, amount float64, description string, date time.Time, categoryID, paymentMethodID, userID string, currencyID string, transactionType domain.TransactionType) (*domain.Transaction, error) {
 	transaction := &domain.Transaction{
 		ID:              uuid.New().String(),
 		Amount:          amount,
 		Description:     description,
 		Date:            date,
 		CategoryID:      categoryID,
+		Type:            transactionType,
 		PaymentMethodID: paymentMethodID,
 		UserID:          userID,
+		CurrencyID:      currencyID,
 		CreatedAt:       time.Now(),
 		UpdatedAt:       time.Now(),
 	}
@@ -68,7 +70,7 @@ func (s *Service) GetTransactionsByDateRange(ctx context.Context, userID string,
 }
 
 // UpdateTransaction actualiza una transacción existente
-func (s *Service) UpdateTransaction(ctx context.Context, id string, amount float64, description string, date time.Time, categoryID, paymentMethodID string) (*domain.Transaction, error) {
+func (s *Service) UpdateTransaction(ctx context.Context, id string, amount float64, description string, date time.Time, categoryID, paymentMethodID string, currencyID string, transactionType domain.TransactionType) (*domain.Transaction, error) {
 	transaction, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -88,8 +90,16 @@ func (s *Service) UpdateTransaction(ctx context.Context, id string, amount float
 		transaction.CategoryID = categoryID
 	}
 
+	if transactionType != "" {
+		transaction.Type = transactionType
+	}
+
 	if paymentMethodID != "" {
 		transaction.PaymentMethodID = paymentMethodID
+	}
+
+	if currencyID != "" {
+		transaction.CurrencyID = currencyID
 	}
 
 	transaction.UpdatedAt = time.Now()

@@ -1,8 +1,8 @@
 package paymentmethod
 
 import (
-	handler "mi-app-backend/internal/infraestructure/inbound/httprest/handlers/paymentmethod"
-	middleware "mi-app-backend/internal/infraestructure/inbound/httprest/middlewares"
+	handler "MyMoneyBackend/internal/infraestructure/inbound/httprest/handlers/paymentmethod"
+	middleware "MyMoneyBackend/internal/infraestructure/inbound/httprest/middlewares"
 
 	"github.com/gin-gonic/gin"
 )

@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	auth "mi-app-backend/internal/application/auth"
+	auth "MyMoneyBackend/internal/application/auth"
 
 	"github.com/gin-gonic/gin"
 )

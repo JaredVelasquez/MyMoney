@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"mi-app-backend/internal/domain"
+	"MyMoneyBackend/internal/domain"
 )
 
 // TransactionRepository define las operaciones para el repositorio de transacciones

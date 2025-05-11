@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"mi-app-backend/internal/domain"
-	"mi-app-backend/internal/domain/ports/app"
+	"MyMoneyBackend/internal/domain"
+	"MyMoneyBackend/internal/domain/ports/app"
 )
 
 // Service implementa la lógica de negocio para las suscripciones de usuarios

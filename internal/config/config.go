@@ -4,7 +4,7 @@ import (
 	"os"
 	"strconv"
 
-	"mi-app-backend/internal/domain"
+	"MyMoneyBackend/internal/domain"
 )
 
 // Load carga la configuración desde variables de entorno

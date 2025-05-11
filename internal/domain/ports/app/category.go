@@ -3,7 +3,7 @@ package app
 import (
 	"context"
 
-	"mi-app-backend/internal/domain"
+	"MyMoneyBackend/internal/domain"
 )
 
 // CategoryRepository define las operaciones para el repositorio de categorías
@@ -16,9 +16,6 @@ type CategoryRepository interface {
 
 	// GetByUserID obtiene todas las categorías de un usuario
 	GetByUserID(ctx context.Context, userID string) ([]*domain.Category, error)
-
-	// GetByType obtiene todas las categorías de un usuario por tipo
-	GetByType(ctx context.Context, userID string, categoryType domain.CategoryType) ([]*domain.Category, error)
 
 	// Update actualiza una categoría existente
 	Update(ctx context.Context, category *domain.Category) error

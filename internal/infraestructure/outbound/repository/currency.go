@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"mi-app-backend/internal/domain"
+	"MyMoneyBackend/internal/domain"
 )
 
 // CurrencyRepository implementa el puerto app.CurrencyRepository

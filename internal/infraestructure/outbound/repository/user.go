@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"mi-app-backend/internal/domain"
+	"MyMoneyBackend/internal/domain"
 
 	"github.com/google/uuid"
 )

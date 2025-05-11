@@ -3,8 +3,8 @@ package currency
 import (
 	"github.com/gin-gonic/gin"
 
-	handler "mi-app-backend/internal/infraestructure/inbound/httprest/handlers/currency"
-	middleware "mi-app-backend/internal/infraestructure/inbound/httprest/middlewares"
+	handler "MyMoneyBackend/internal/infraestructure/inbound/httprest/handlers/currency"
+	middleware "MyMoneyBackend/internal/infraestructure/inbound/httprest/middlewares"
 )
 
 // SetupCurrencyRoutes configura las rutas relacionadas con las monedas

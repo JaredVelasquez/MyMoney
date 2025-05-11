@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"mi-app-backend/internal/domain"
-	"mi-app-backend/internal/domain/ports/app"
+	"MyMoneyBackend/internal/domain"
+	"MyMoneyBackend/internal/domain/ports/app"
 
 	"github.com/google/uuid"
 )

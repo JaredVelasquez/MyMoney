@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"mi-app-backend/internal/application/plan"
-	"mi-app-backend/internal/domain"
+	"MyMoneyBackend/internal/application/plan"
+	"MyMoneyBackend/internal/domain"
 )
 
 // Handler maneja las solicitudes HTTP relacionadas con los planes
@@ -73,7 +73,7 @@ func mapPlanToPlanResponse(plan *domain.Plan) domain.PlanResponse {
 // @Tags plans
 // @Accept json
 // @Produce json
-// @Success 200 {array} PlanResponse
+// @Success 200 {array} domain.PlanResponse
 // @Router /plans [get]
 func (h *Handler) GetAllPlans(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -98,7 +98,7 @@ func (h *Handler) GetAllPlans(c *gin.Context) {
 // @Tags plans
 // @Accept json
 // @Produce json
-// @Success 200 {array} PlanResponse
+// @Success 200 {array} domain.PlanResponse
 // @Router /plans/public [get]
 func (h *Handler) GetPublicPlans(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -123,7 +123,7 @@ func (h *Handler) GetPublicPlans(c *gin.Context) {
 // @Tags plans
 // @Accept json
 // @Produce json
-// @Success 200 {array} PlanResponse
+// @Success 200 {array} domain.PlanResponse
 // @Router /plans/active [get]
 func (h *Handler) GetActivePlans(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -149,7 +149,7 @@ func (h *Handler) GetActivePlans(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "ID del plan"
-// @Success 200 {object} PlanResponse
+// @Success 200 {object} domain.PlanResponse
 // @Failure 404 {object} map[string]string
 // @Router /plans/{id} [get]
 func (h *Handler) GetPlanByID(c *gin.Context) {
@@ -171,9 +171,9 @@ func (h *Handler) GetPlanByID(c *gin.Context) {
 // @Tags plans
 // @Accept json
 // @Produce json
-// @Param plan body CreatePlanRequest true "Datos del plan"
+// @Param plan body domain.CreatePlanRequest true "Datos del plan"
 // @Security Bearer
-// @Success 201 {object} PlanResponse
+// @Success 201 {object} domain.PlanResponse
 // @Failure 400 {object} map[string]string
 // @Failure 401 {object} map[string]string "Unauthorized"
 // @Failure 409 {object} map[string]string
@@ -229,9 +229,9 @@ func (h *Handler) CreatePlan(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "ID del plan"
-// @Param plan body UpdatePlanRequest true "Datos actualizados del plan"
+// @Param plan body domain.UpdatePlanRequest true "Datos actualizados del plan"
 // @Security Bearer
-// @Success 200 {object} PlanResponse
+// @Success 200 {object} domain.PlanResponse
 // @Failure 400 {object} map[string]string
 // @Failure 401 {object} map[string]string "Unauthorized"
 // @Failure 404 {object} map[string]string

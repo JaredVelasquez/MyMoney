@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
-	"mi-app-backend/db/config"
+	"MyMoneyBackend/db/config"
 )
 
 // Handler handles health check requests

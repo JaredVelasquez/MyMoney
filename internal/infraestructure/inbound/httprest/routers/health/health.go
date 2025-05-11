@@ -3,7 +3,7 @@ package health
 import (
 	"github.com/gin-gonic/gin"
 
-	"mi-app-backend/internal/infraestructure/inbound/httprest/handlers/health"
+	"MyMoneyBackend/internal/infraestructure/inbound/httprest/handlers/health"
 )
 
 // SetupHealthRoutes configura las rutas de health check

@@ -4,10 +4,17 @@ import (
 	"net/http"
 	"time"
 
-	transaction "mi-app-backend/internal/application/transaction"
-	"mi-app-backend/internal/domain"
+	transaction "MyMoneyBackend/internal/application/transaction"
+	"MyMoneyBackend/internal/domain"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+)
+
+// Constantes
+const (
+	// DefaultCurrencyUUID es el UUID por defecto para la moneda USD
+	DefaultCurrencyUUID = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
 )
 
 // TransactionHandler handles transaction-related HTTP requests
@@ -23,6 +30,17 @@ func NewTransactionHandler(transactionService *transaction.Service) *Transaction
 }
 
 // CreateTransaction handles transaction creation
+// @Summary Crear una nueva transacción
+// @Description Crea una nueva transacción para el usuario autenticado
+// @Tags transactions
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Param transaction body domain.CreateTransactionRequest true "Datos de la transacción a crear"
+// @Success 201 {object} domain.Transaction
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/transactions [post]
 func (h *TransactionHandler) CreateTransaction(c *gin.Context) {
 	userID := c.GetString("user_id")
 	if userID == "" {
@@ -36,6 +54,14 @@ func (h *TransactionHandler) CreateTransaction(c *gin.Context) {
 		return
 	}
 
+	// Asegurarse de que currency_id sea un UUID válido
+	currencyID := req.CurrencyID
+	// Si el cliente está enviando un código de moneda o un UUID incorrecto, usar el UUID de USD
+	if _, err := uuid.Parse(currencyID); err != nil {
+		// UUID para USD obtenido de la migración
+		currencyID = DefaultCurrencyUUID
+	}
+
 	transaction, err := h.transactionService.CreateTransaction(
 		c.Request.Context(),
 		req.Amount,
@@ -44,6 +70,8 @@ func (h *TransactionHandler) CreateTransaction(c *gin.Context) {
 		req.CategoryID,
 		req.PaymentMethodID,
 		userID,
+		currencyID,
+		req.Type,
 	)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -54,6 +82,15 @@ func (h *TransactionHandler) CreateTransaction(c *gin.Context) {
 }
 
 // GetUserTransactions returns all transactions for the current user
+// @Summary Obtener todas las transacciones del usuario
+// @Description Retorna todas las transacciones del usuario autenticado
+// @Tags transactions
+// @Produce json
+// @Security Bearer
+// @Success 200 {array} domain.Transaction
+// @Failure 401 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /api/transactions [get]
 func (h *TransactionHandler) GetUserTransactions(c *gin.Context) {
 	userID := c.GetString("user_id")
 	if userID == "" {
@@ -71,6 +108,17 @@ func (h *TransactionHandler) GetUserTransactions(c *gin.Context) {
 }
 
 // GetTransaction returns a specific transaction
+// @Summary Obtener una transacción específica
+// @Description Retorna una transacción específica por su ID
+// @Tags transactions
+// @Produce json
+// @Security Bearer
+// @Param id path string true "ID de la transacción"
+// @Success 200 {object} domain.Transaction
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /api/transactions/{id} [get]
 func (h *TransactionHandler) GetTransaction(c *gin.Context) {
 	userID := c.GetString("user_id")
 	if userID == "" {
@@ -94,6 +142,19 @@ func (h *TransactionHandler) GetTransaction(c *gin.Context) {
 }
 
 // UpdateTransaction updates a transaction
+// @Summary Actualizar una transacción
+// @Description Actualiza una transacción existente
+// @Tags transactions
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Param id path string true "ID de la transacción"
+// @Param transaction body domain.UpdateTransactionRequest true "Datos de la transacción a actualizar"
+// @Success 200 {object} domain.Transaction
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /api/transactions/{id} [put]
 func (h *TransactionHandler) UpdateTransaction(c *gin.Context) {
 	userID := c.GetString("user_id")
 	if userID == "" {
@@ -113,6 +174,15 @@ func (h *TransactionHandler) UpdateTransaction(c *gin.Context) {
 		return
 	}
 
+	// Asegurarse de que currency_id sea un UUID válido si está presente
+	currencyID := req.CurrencyID
+	if currencyID != "" {
+		if _, err := uuid.Parse(currencyID); err != nil {
+			// UUID para USD obtenido de la migración
+			currencyID = DefaultCurrencyUUID
+		}
+	}
+
 	transaction, err := h.transactionService.UpdateTransaction(
 		c.Request.Context(),
 		transactionID,
@@ -121,6 +191,8 @@ func (h *TransactionHandler) UpdateTransaction(c *gin.Context) {
 		req.Date,
 		req.CategoryID,
 		req.PaymentMethodID,
+		currencyID,
+		req.Type,
 	)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -131,6 +203,15 @@ func (h *TransactionHandler) UpdateTransaction(c *gin.Context) {
 }
 
 // DeleteTransaction deletes a transaction
+// @Summary Eliminar una transacción
+// @Description Elimina una transacción existente
+// @Tags transactions
+// @Security Bearer
+// @Param id path string true "ID de la transacción"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/transactions/{id} [delete]
 func (h *TransactionHandler) DeleteTransaction(c *gin.Context) {
 	userID := c.GetString("user_id")
 	if userID == "" {
@@ -154,6 +235,16 @@ func (h *TransactionHandler) DeleteTransaction(c *gin.Context) {
 }
 
 // GetTransactionsByCategory returns all transactions for a specific category
+// @Summary Obtener transacciones por categoría
+// @Description Retorna todas las transacciones de una categoría específica
+// @Tags transactions
+// @Produce json
+// @Security Bearer
+// @Param categoryId path string true "ID de la categoría"
+// @Success 200 {array} domain.Transaction
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/transactions/category/{categoryId} [get]
 func (h *TransactionHandler) GetTransactionsByCategory(c *gin.Context) {
 	userID := c.GetString("user_id")
 	if userID == "" {
@@ -177,6 +268,18 @@ func (h *TransactionHandler) GetTransactionsByCategory(c *gin.Context) {
 }
 
 // GetTransactionsByDateRange returns all transactions within a date range
+// @Summary Obtener transacciones por rango de fechas
+// @Description Retorna todas las transacciones dentro de un rango de fechas
+// @Tags transactions
+// @Produce json
+// @Security Bearer
+// @Param start_date query string true "Fecha de inicio (formato YYYY-MM-DD)"
+// @Param end_date query string true "Fecha de fin (formato YYYY-MM-DD)"
+// @Success 200 {array} domain.Transaction
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /api/transactions/date-range [get]
 func (h *TransactionHandler) GetTransactionsByDateRange(c *gin.Context) {
 	userID := c.GetString("user_id")
 	if userID == "" {

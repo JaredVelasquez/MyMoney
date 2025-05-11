@@ -3,8 +3,8 @@ package api
 import (
 	"net/http"
 
-	"mi-app-backend/internal/application/auth"
-	services "mi-app-backend/internal/application/user"
+	"MyMoneyBackend/internal/application/auth"
+	services "MyMoneyBackend/internal/application/user"
 
 	"github.com/gin-gonic/gin"
 )
@@ -57,8 +57,19 @@ type UserResponse struct {
 
 // LoginResponse represents the login response
 type LoginResponse struct {
-	Token string       `json:"token"`
-	User  UserResponse `json:"user"`
+	AccessToken  string       `json:"access_token"`
+	RefreshToken string       `json:"refresh_token"`
+	User         UserResponse `json:"user"`
+}
+
+// RefreshTokenRequest represents the refresh token request
+type RefreshTokenRequest struct {
+	RefreshToken string `json:"refresh_token" binding:"required"`
+}
+
+// RefreshTokenResponse represents the refresh token response
+type RefreshTokenResponse struct {
+	AccessToken string `json:"access_token"`
 }
 
 // Register godoc
@@ -68,7 +79,7 @@ type LoginResponse struct {
 // @Accept json
 // @Produce json
 // @Param user body RegisterRequest true "Datos del usuario"
-// @Success 201 {object} UserResponse
+// @Success 201 {object} LoginResponse
 // @Failure 400 {object} map[string]string
 // @Failure 409 {object} map[string]string
 // @Router /auth/register [post]
@@ -85,10 +96,21 @@ func (h *UserHandler) Register(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, UserResponse{
-		ID:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
+	// Generate JWT token pair
+	tokenPair, err := h.authService.GenerateTokenPair(user.ID, user.Email)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "error generating token"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, LoginResponse{
+		AccessToken:  tokenPair.AccessToken,
+		RefreshToken: tokenPair.RefreshToken,
+		User: UserResponse{
+			ID:    user.ID,
+			Name:  user.Name,
+			Email: user.Email,
+		},
 	})
 }
 
@@ -116,15 +138,16 @@ func (h *UserHandler) Login(c *gin.Context) {
 		return
 	}
 
-	// Generate JWT token
-	token, err := h.authService.GenerateToken(user.ID, user.Email)
+	// Generate JWT token pair
+	tokenPair, err := h.authService.GenerateTokenPair(user.ID, user.Email)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "error generating token"})
 		return
 	}
 
 	c.JSON(http.StatusOK, LoginResponse{
-		Token: token,
+		AccessToken:  tokenPair.AccessToken,
+		RefreshToken: tokenPair.RefreshToken,
 		User: UserResponse{
 			ID:    user.ID,
 			Name:  user.Name,
@@ -237,4 +260,34 @@ func (h *UserHandler) ChangePassword(c *gin.Context) {
 	}
 
 	c.Status(http.StatusNoContent)
+}
+
+// RefreshToken godoc
+// @Summary Refresh token
+// @Description Refreshes an access token using a refresh token
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param refreshToken body RefreshTokenRequest true "Refresh token"
+// @Success 200 {object} RefreshTokenResponse
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /auth/refresh-token [post]
+func (h *UserHandler) RefreshToken(c *gin.Context) {
+	var req RefreshTokenRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Generate new access token
+	newAccessToken, err := h.authService.RefreshAccessToken(req.RefreshToken)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid refresh token"})
+		return
+	}
+
+	c.JSON(http.StatusOK, RefreshTokenResponse{
+		AccessToken: newAccessToken,
+	})
 }

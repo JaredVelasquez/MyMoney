@@ -1,6 +1,6 @@
 package app
 
-import "mi-app-backend/internal/domain"
+import "MyMoneyBackend/internal/domain"
 
 // UserRepository defines methods for user persistence
 type UserRepository interface {

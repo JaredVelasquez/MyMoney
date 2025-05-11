@@ -3,7 +3,7 @@ package app
 import (
 	"context"
 
-	"mi-app-backend/internal/domain"
+	"MyMoneyBackend/internal/domain"
 )
 
 // CurrencyRepository es la interfaz que define los métodos para el repositorio de monedas

@@ -18,7 +18,6 @@ CREATE TABLE IF NOT EXISTS categories (
     id UUID PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     description TEXT,
-    type VARCHAR(20) NOT NULL CHECK (type IN ('INCOME', 'EXPENSE')),
     color VARCHAR(20),
     icon VARCHAR(50),
     user_id UUID NOT NULL,
@@ -29,7 +28,6 @@ CREATE TABLE IF NOT EXISTS categories (
 
 -- Índices para categorías
 CREATE INDEX IF NOT EXISTS idx_categories_user_id ON categories(user_id);
-CREATE INDEX IF NOT EXISTS idx_categories_type ON categories(type);
 CREATE INDEX IF NOT EXISTS idx_categories_name ON categories(name);
 
 -- Tabla de métodos de pago
@@ -55,15 +53,16 @@ CREATE TABLE IF NOT EXISTS transactions (
     description TEXT,
     date TIMESTAMP WITH TIME ZONE NOT NULL,
     category_id UUID NOT NULL,
-    type VARCHAR(20) NOT NULL CHECK (type IN ('INCOME', 'EXPENSE')),
+    type VARCHAR(10) NOT NULL CHECK (type IN ('INCOME', 'EXPENSE')),
     payment_method_id UUID,
-    currency_id VARCHAR(3) DEFAULT 'USD',
+    currency_id UUID NOT NULL,
     user_id UUID NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT,
     FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id) ON DELETE SET NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (currency_id) REFERENCES currencies(id)
 );
 
 -- Índices para transacciones
@@ -72,6 +71,7 @@ CREATE INDEX IF NOT EXISTS idx_transactions_category_id ON transactions(category
 CREATE INDEX IF NOT EXISTS idx_transactions_payment_method_id ON transactions(payment_method_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(date);
 CREATE INDEX IF NOT EXISTS idx_transactions_type ON transactions(type);
+CREATE INDEX IF NOT EXISTS idx_transactions_currency_id ON transactions(currency_id);
 
 -- Insertar datos de ejemplo para usuario
 INSERT INTO users (id, email, name, password, created_at, updated_at)

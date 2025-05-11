@@ -3,7 +3,7 @@ package app
 import (
 	"context"
 
-	"mi-app-backend/internal/domain"
+	"MyMoneyBackend/internal/domain"
 )
 
 // PaymentMethodRepository define las operaciones para el repositorio de métodos de pago

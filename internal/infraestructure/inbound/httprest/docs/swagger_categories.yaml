@@ -1,0 +1,196 @@
+paths:
+  /api/categories:
+    get:
+      tags:
+        - categories
+      summary: Obtener todas las categorías del usuario
+      description: Retorna todas las categorías del usuario autenticado
+      operationId: getUserCategories
+      produces:
+        - application/json
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: Operación exitosa
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/MyMoneyBackend_internal_domain.Category'
+        401:
+          description: No autorizado
+        500:
+          description: Error del servidor
+
+    post:
+      tags:
+        - categories
+      summary: Crear una nueva categoría
+      description: Crea una nueva categoría para el usuario autenticado
+      operationId: createCategory
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      security:
+        - Bearer: []
+      parameters:
+        - in: body
+          name: category
+          description: Datos de la categoría a crear
+          required: true
+          schema:
+            $ref: '#/definitions/MyMoneyBackend_internal_domain.CreateCategoryRequest'
+      responses:
+        201:
+          description: Categoría creada exitosamente
+          schema:
+            $ref: '#/definitions/MyMoneyBackend_internal_domain.Category'
+        400:
+          description: Datos inválidos
+        401:
+          description: No autorizado
+        500:
+          description: Error del servidor
+
+  /api/categories/{id}:
+    get:
+      tags:
+        - categories
+      summary: Obtener una categoría específica
+      description: Retorna una categoría específica por su ID
+      operationId: getCategory
+      produces:
+        - application/json
+      security:
+        - Bearer: []
+      parameters:
+        - name: id
+          in: path
+          description: ID de la categoría
+          required: true
+          type: string
+      responses:
+        200:
+          description: Operación exitosa
+          schema:
+            $ref: '#/definitions/MyMoneyBackend_internal_domain.Category'
+        401:
+          description: No autorizado
+        403:
+          description: Acceso denegado
+        404:
+          description: Categoría no encontrada
+        500:
+          description: Error del servidor
+
+    put:
+      tags:
+        - categories
+      summary: Actualizar una categoría
+      description: Actualiza una categoría existente
+      operationId: updateCategory
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      security:
+        - Bearer: []
+      parameters:
+        - name: id
+          in: path
+          description: ID de la categoría
+          required: true
+          type: string
+        - in: body
+          name: category
+          description: Datos de la categoría a actualizar
+          required: true
+          schema:
+            $ref: '#/definitions/MyMoneyBackend_internal_domain.UpdateCategoryRequest'
+      responses:
+        200:
+          description: Categoría actualizada exitosamente
+          schema:
+            $ref: '#/definitions/MyMoneyBackend_internal_domain.Category'
+        400:
+          description: Datos inválidos
+        401:
+          description: No autorizado
+        404:
+          description: Categoría no encontrada
+        500:
+          description: Error del servidor
+
+    delete:
+      tags:
+        - categories
+      summary: Eliminar una categoría
+      description: Elimina una categoría existente
+      operationId: deleteCategory
+      security:
+        - Bearer: []
+      parameters:
+        - name: id
+          in: path
+          description: ID de la categoría
+          required: true
+          type: string
+      responses:
+        200:
+          description: Categoría eliminada exitosamente
+        401:
+          description: No autorizado
+        404:
+          description: Categoría no encontrada
+        500:
+          description: Error del servidor
+
+definitions:
+  MyMoneyBackend_internal_domain.Category:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      description:
+        type: string
+      color:
+        type: string
+      icon:
+        type: string
+      user_id:
+        type: string
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+
+  MyMoneyBackend_internal_domain.CreateCategoryRequest:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      color:
+        type: string
+      icon:
+        type: string
+
+  MyMoneyBackend_internal_domain.UpdateCategoryRequest:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      color:
+        type: string
+      icon:
+        type: string 

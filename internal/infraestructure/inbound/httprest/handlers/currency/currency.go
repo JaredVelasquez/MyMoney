@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"mi-app-backend/internal/application/currency"
-	"mi-app-backend/internal/domain"
+	"MyMoneyBackend/internal/application/currency"
+	"MyMoneyBackend/internal/domain"
 )
 
 // Handler maneja las solicitudes HTTP relacionadas con las monedas
@@ -40,7 +40,7 @@ func mapCurrencyToCurrencyResponse(currency *domain.Currency) domain.CurrencyRes
 // @Tags currencies
 // @Accept json
 // @Produce json
-// @Success 200 {array} CurrencyResponse
+// @Success 200 {array} domain.CurrencyResponse
 // @Router /currencies [get]
 func (h *Handler) GetAllCurrencies(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -65,7 +65,7 @@ func (h *Handler) GetAllCurrencies(c *gin.Context) {
 // @Tags currencies
 // @Accept json
 // @Produce json
-// @Success 200 {array} CurrencyResponse
+// @Success 200 {array} domain.CurrencyResponse
 // @Router /currencies/active [get]
 func (h *Handler) GetActiveCurrencies(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -91,7 +91,7 @@ func (h *Handler) GetActiveCurrencies(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "ID de la moneda"
-// @Success 200 {object} CurrencyResponse
+// @Success 200 {object} domain.CurrencyResponse
 // @Failure 404 {object} map[string]string
 // @Router /currencies/{id} [get]
 func (h *Handler) GetCurrencyByID(c *gin.Context) {
@@ -114,7 +114,7 @@ func (h *Handler) GetCurrencyByID(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param code path string true "Código de la moneda"
-// @Success 200 {object} CurrencyResponse
+// @Success 200 {object} domain.CurrencyResponse
 // @Failure 404 {object} map[string]string
 // @Router /currencies/code/{code} [get]
 func (h *Handler) GetCurrencyByCode(c *gin.Context) {
@@ -136,9 +136,9 @@ func (h *Handler) GetCurrencyByCode(c *gin.Context) {
 // @Tags currencies
 // @Accept json
 // @Produce json
-// @Param currency body CreateCurrencyRequest true "Datos de la moneda"
+// @Param currency body domain.CreateCurrencyRequest true "Datos de la moneda"
 // @Security Bearer
-// @Success 201 {object} CurrencyResponse
+// @Success 201 {object} domain.CurrencyResponse
 // @Failure 400 {object} map[string]string
 // @Failure 401 {object} map[string]string "Unauthorized"
 // @Failure 409 {object} map[string]string
@@ -167,9 +167,9 @@ func (h *Handler) CreateCurrency(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "ID de la moneda"
-// @Param currency body UpdateCurrencyRequest true "Datos actualizados de la moneda"
+// @Param currency body domain.UpdateCurrencyRequest true "Datos actualizados de la moneda"
 // @Security Bearer
-// @Success 200 {object} CurrencyResponse
+// @Success 200 {object} domain.CurrencyResponse
 // @Failure 400 {object} map[string]string
 // @Failure 401 {object} map[string]string "Unauthorized"
 // @Failure 404 {object} map[string]string

@@ -1,8 +1,8 @@
 package category
 
 import (
-	handler "mi-app-backend/internal/infraestructure/inbound/httprest/handlers/category"
-	middleware "mi-app-backend/internal/infraestructure/inbound/httprest/middlewares"
+	handler "MyMoneyBackend/internal/infraestructure/inbound/httprest/handlers/category"
+	middleware "MyMoneyBackend/internal/infraestructure/inbound/httprest/middlewares"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,6 +18,5 @@ func SetupCategoryRoutes(router *gin.RouterGroup, categoryHandler *handler.Categ
 		categories.GET("/:id", categoryHandler.GetCategory)
 		categories.PUT("/:id", categoryHandler.UpdateCategory)
 		categories.DELETE("/:id", categoryHandler.DeleteCategory)
-		categories.GET("/type/:type", categoryHandler.GetCategoriesByType)
 	}
 }

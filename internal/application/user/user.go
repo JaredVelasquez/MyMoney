@@ -5,8 +5,8 @@ import (
 	"log"
 	"time"
 
-	"mi-app-backend/internal/domain"
-	"mi-app-backend/internal/domain/ports/app"
+	"MyMoneyBackend/internal/domain"
+	"MyMoneyBackend/internal/domain/ports/app"
 
 	"golang.org/x/crypto/bcrypt"
 

@@ -3,12 +3,12 @@ package user_subscription
 import (
 	"github.com/gin-gonic/gin"
 
-	"mi-app-backend/internal/infraestructure/inbound/httprest/handlers/user_subscription"
+	"MyMoneyBackend/internal/infraestructure/inbound/httprest/handlers/user_subscription"
 )
 
 // SetupUserSubscriptionRoutes configura las rutas para las suscripciones de usuarios
 func SetupUserSubscriptionRoutes(
-	router *gin.Engine,
+	router *gin.RouterGroup,
 	authMiddleware gin.HandlerFunc,
 	adminMiddleware gin.HandlerFunc,
 	handler *user_subscription.Handler,

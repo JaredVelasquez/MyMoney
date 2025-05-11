@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"mi-app-backend/internal/domain"
-	"mi-app-backend/internal/domain/ports/app"
+	"MyMoneyBackend/internal/domain"
+	"MyMoneyBackend/internal/domain/ports/app"
 
 	"github.com/google/uuid"
 )
@@ -23,12 +23,11 @@ func NewService(repo app.CategoryRepository) *Service {
 }
 
 // CreateCategory crea una nueva categoría
-func (s *Service) CreateCategory(ctx context.Context, name, description string, categoryType domain.CategoryType, icon, color, userID string) (*domain.Category, error) {
+func (s *Service) CreateCategory(ctx context.Context, name, description string, icon, color, userID string) (*domain.Category, error) {
 	category := &domain.Category{
 		ID:          uuid.New().String(),
 		Name:        name,
 		Description: description,
-		Type:        categoryType,
 		Icon:        icon,
 		Color:       color,
 		UserID:      userID,
@@ -57,13 +56,8 @@ func (s *Service) GetCategoriesByUserID(ctx context.Context, userID string) ([]*
 	return s.repo.GetByUserID(ctx, userID)
 }
 
-// GetCategoriesByType obtiene todas las categorías de un usuario por tipo
-func (s *Service) GetCategoriesByType(ctx context.Context, userID string, categoryType domain.CategoryType) ([]*domain.Category, error) {
-	return s.repo.GetByType(ctx, userID, categoryType)
-}
-
 // UpdateCategory actualiza una categoría existente
-func (s *Service) UpdateCategory(ctx context.Context, id, name, description string, categoryType domain.CategoryType, icon, color string) (*domain.Category, error) {
+func (s *Service) UpdateCategory(ctx context.Context, id, name, description string, icon, color string) (*domain.Category, error) {
 	category, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -74,10 +68,6 @@ func (s *Service) UpdateCategory(ctx context.Context, id, name, description stri
 	}
 
 	category.Description = description
-
-	if categoryType != "" {
-		category.Type = categoryType
-	}
 
 	if icon != "" {
 		category.Icon = icon

@@ -1,6 +1,9 @@
 #!/bin/bash
 
-# Script para corregir las importaciones en todo el proyecto
-find . -type f -name "*.go" -exec sed -i 's|github.com/user/mi-app-backend|mi-app-backend|g' {} \;
+# Reemplazar todas las ocurrencias de mi-app-backend con MyMoneyBackend en archivos .go
+find . -type f -name "*.go" -exec sed -i 's/mi-app-backend/MyMoneyBackend/g' {} \;
 
-echo "Importaciones corregidas" 
+# Regenerar la documentación Swagger
+swag init -g cmd/main.go --parseDependency -d . -o internal/infraestructure/inbound/httprest/docs
+
+echo "Todas las importaciones han sido actualizadas a MyMoneyBackend" 

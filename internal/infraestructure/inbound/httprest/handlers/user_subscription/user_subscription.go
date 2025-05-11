@@ -6,9 +6,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"mi-app-backend/internal/application/user_subscription"
-	"mi-app-backend/internal/domain"
-	middleware "mi-app-backend/internal/infraestructure/inbound/httprest/middlewares"
+	"MyMoneyBackend/internal/application/user_subscription"
+	"MyMoneyBackend/internal/domain"
+	middleware "MyMoneyBackend/internal/infraestructure/inbound/httprest/middlewares"
 )
 
 // Handler maneja las solicitudes HTTP relacionadas con suscripciones de usuarios
@@ -29,9 +29,9 @@ func NewUserSubscriptionHandler(service *user_subscription.Service) *Handler {
 // @Tags subscriptions
 // @Accept json
 // @Produce json
-// @Param subscription body CreateSubscriptionRequest true "Datos de la suscripción"
+// @Param subscription body domain.CreateSubscriptionRequest true "Datos de la suscripción"
 // @Security Bearer
-// @Success 201 {object} SubscriptionResponse
+// @Success 201 {object} domain.SubscriptionResponse
 // @Failure 400 {object} map[string]string
 // @Failure 401 {object} map[string]string
 // @Failure 404 {object} map[string]string
@@ -112,7 +112,7 @@ func (h *Handler) GetActiveSubscription(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security Bearer
-// @Success 200 {array} SubscriptionResponse
+// @Success 200 {array} domain.SubscriptionResponse
 // @Failure 401 {object} map[string]string
 // @Router /subscriptions [get]
 func (h *Handler) GetUserSubscriptions(c *gin.Context) {
@@ -147,7 +147,7 @@ func (h *Handler) GetUserSubscriptions(c *gin.Context) {
 // @Produce json
 // @Param id path string true "ID de la suscripción"
 // @Security Bearer
-// @Success 200 {object} SubscriptionResponse
+// @Success 200 {object} domain.SubscriptionResponse
 // @Failure 401 {object} map[string]string
 // @Failure 404 {object} map[string]string
 // @Router /subscriptions/{id} [get]
@@ -190,7 +190,7 @@ func (h *Handler) GetSubscriptionByID(c *gin.Context) {
 // @Produce json
 // @Param id path string true "ID de la suscripción"
 // @Security Bearer
-// @Success 200 {object} SubscriptionResponse
+// @Success 200 {object} domain.SubscriptionResponse
 // @Failure 401 {object} map[string]string
 // @Failure 404 {object} map[string]string
 // @Failure 409 {object} map[string]string
@@ -316,7 +316,7 @@ func (h *Handler) UpdatePaymentMethod(c *gin.Context) {
 	}
 
 	// Parsear la solicitud
-	var req domain.UpdatePaymentMethodRequest
+	var req domain.UpdateSubscriptionPaymentMethodRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Datos de solicitud inválidos: " + err.Error()})
 		return
@@ -339,7 +339,7 @@ func (h *Handler) UpdatePaymentMethod(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security Bearer
-// @Success 200 {array} SubscriptionResponse
+// @Success 200 {array} domain.SubscriptionResponse
 // @Failure 401 {object} map[string]string
 // @Failure 403 {object} map[string]string
 // @Router /admin/subscriptions [get]
@@ -440,7 +440,7 @@ func (h *Handler) GetPendingRenewals(c *gin.Context) {
 // @Produce json
 // @Param status path string true "Estado de suscripción (active, expired, cancelled)"
 // @Security Bearer
-// @Success 200 {array} SubscriptionResponse
+// @Success 200 {array} domain.SubscriptionResponse
 // @Failure 401 {object} map[string]string
 // @Failure 403 {object} map[string]string
 // @Failure 400 {object} map[string]string
@@ -457,7 +457,7 @@ func (h *Handler) GetSubscriptionsByStatus(c *gin.Context) {
 // @Produce json
 // @Param id path string true "ID de la suscripción"
 // @Security Bearer
-// @Success 200 {object} SubscriptionResponse
+// @Success 200 {object} domain.SubscriptionResponse
 // @Failure 401 {object} map[string]string
 // @Failure 404 {object} map[string]string
 // @Failure 409 {object} map[string]string

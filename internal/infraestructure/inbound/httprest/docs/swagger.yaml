@@ -23,10 +23,24 @@ definitions:
     type: object
   api.LoginResponse:
     properties:
-      token:
+      access_token:
+        type: string
+      refresh_token:
         type: string
       user:
         $ref: '#/definitions/api.UserResponse'
+    type: object
+  api.RefreshTokenRequest:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  api.RefreshTokenResponse:
+    properties:
+      access_token:
+        type: string
     type: object
   api.RegisterRequest:
     properties:
@@ -61,39 +75,39 @@ definitions:
       name:
         type: string
     type: object
-  currency.CreateCurrencyRequest:
+  domain.Category:
     properties:
-      code:
-        type: string
-      is_active:
-        type: boolean
-      name:
-        type: string
-      symbol:
-        type: string
-    required:
-    - code
-    - name
-    - symbol
-    type: object
-  currency.CurrencyResponse:
-    properties:
-      code:
+      color:
         type: string
       created_at:
         type: string
+      description:
+        type: string
+      icon:
+        type: string
       id:
         type: string
-      is_active:
-        type: boolean
       name:
-        type: string
-      symbol:
         type: string
       updated_at:
         type: string
+      user_id:
+        type: string
     type: object
-  currency.UpdateCurrencyRequest:
+  domain.CreateCategoryRequest:
+    properties:
+      color:
+        type: string
+      description:
+        type: string
+      icon:
+        type: string
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  domain.CreateCurrencyRequest:
     properties:
       code:
         type: string
@@ -108,31 +122,16 @@ definitions:
     - name
     - symbol
     type: object
-  health.HealthResponse:
+  domain.CreatePaymentMethodRequest:
     properties:
-      environment:
+      description:
         type: string
-      guid:
+      name:
         type: string
-      info:
-        $ref: '#/definitions/health.InfoData'
-      status:
-        type: string
-      timestamp:
-        type: string
-      version:
-        type: string
+    required:
+    - name
     type: object
-  health.InfoData:
-    properties:
-      databaseOK:
-        type: boolean
-      goVersion:
-        type: string
-      uptime:
-        type: string
-    type: object
-  plan.CreatePlanRequest:
+  domain.CreatePlanRequest:
     properties:
       currency_id:
         type: string
@@ -140,7 +139,7 @@ definitions:
         type: string
       features:
         items:
-          $ref: '#/definitions/plan.PlanFeatureRequest'
+          $ref: '#/definitions/domain.PlanFeatureRequest'
         type: array
       interval:
         type: string
@@ -160,86 +159,7 @@ definitions:
     - interval
     - name
     type: object
-  plan.PlanFeatureRequest:
-    properties:
-      description:
-        type: string
-      included:
-        type: boolean
-      name:
-        type: string
-      value:
-        type: string
-    type: object
-  plan.PlanFeatureResponse:
-    properties:
-      description:
-        type: string
-      included:
-        type: boolean
-      name:
-        type: string
-      value:
-        type: string
-    type: object
-  plan.PlanResponse:
-    properties:
-      created_at:
-        type: string
-      currency_id:
-        type: string
-      description:
-        type: string
-      features:
-        items:
-          $ref: '#/definitions/plan.PlanFeatureResponse'
-        type: array
-      id:
-        type: string
-      interval:
-        type: string
-      is_active:
-        type: boolean
-      is_public:
-        type: boolean
-      name:
-        type: string
-      price:
-        type: number
-      sort_order:
-        type: integer
-      updated_at:
-        type: string
-    type: object
-  plan.UpdatePlanRequest:
-    properties:
-      currency_id:
-        type: string
-      description:
-        type: string
-      features:
-        items:
-          $ref: '#/definitions/plan.PlanFeatureRequest'
-        type: array
-      interval:
-        type: string
-      is_active:
-        type: boolean
-      is_public:
-        type: boolean
-      name:
-        type: string
-      price:
-        type: number
-      sort_order:
-        type: integer
-    required:
-    - currency_id
-    - description
-    - interval
-    - name
-    type: object
-  user_subscription.CreateSubscriptionRequest:
+  domain.CreateSubscriptionRequest:
     properties:
       end_date:
         type: string
@@ -256,7 +176,115 @@ definitions:
     required:
     - plan_id
     type: object
-  user_subscription.SubscriptionResponse:
+  domain.CreateTransactionRequest:
+    properties:
+      amount:
+        type: number
+      category_id:
+        type: string
+      currency_id:
+        type: string
+      date:
+        type: string
+      description:
+        type: string
+      payment_method_id:
+        type: string
+      type:
+        $ref: '#/definitions/domain.TransactionType'
+    required:
+    - amount
+    - category_id
+    - currency_id
+    - date
+    - type
+    type: object
+  domain.CurrencyResponse:
+    properties:
+      code:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        type: string
+      symbol:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  domain.PaymentMethod:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  domain.PlanFeatureRequest:
+    properties:
+      description:
+        type: string
+      included:
+        type: boolean
+      name:
+        type: string
+      value:
+        type: string
+    type: object
+  domain.PlanFeatureResponse:
+    properties:
+      description:
+        type: string
+      included:
+        type: boolean
+      name:
+        type: string
+      value:
+        type: string
+    type: object
+  domain.PlanResponse:
+    properties:
+      created_at:
+        type: string
+      currency_id:
+        type: string
+      description:
+        type: string
+      features:
+        items:
+          $ref: '#/definitions/domain.PlanFeatureResponse'
+        type: array
+      id:
+        type: string
+      interval:
+        type: string
+      is_active:
+        type: boolean
+      is_public:
+        type: boolean
+      name:
+        type: string
+      price:
+        type: number
+      sort_order:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  domain.SubscriptionResponse:
     properties:
       cancellation_date:
         type: string
@@ -291,18 +319,155 @@ definitions:
       user_id:
         type: string
     type: object
+  domain.Transaction:
+    properties:
+      amount:
+        type: number
+      category_id:
+        type: string
+      created_at:
+        type: string
+      currency_id:
+        type: string
+      date:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      payment_method_id:
+        type: string
+      type:
+        $ref: '#/definitions/domain.TransactionType'
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  domain.TransactionType:
+    enum:
+    - INCOME
+    - EXPENSE
+    type: string
+    x-enum-varnames:
+    - TransactionTypeIncome
+    - TransactionTypeExpense
+  domain.UpdateCategoryRequest:
+    properties:
+      color:
+        type: string
+      description:
+        type: string
+      icon:
+        type: string
+      name:
+        type: string
+    type: object
+  domain.UpdateCurrencyRequest:
+    properties:
+      code:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        type: string
+      symbol:
+        type: string
+    required:
+    - code
+    - name
+    - symbol
+    type: object
+  domain.UpdatePaymentMethodRequest:
+    properties:
+      description:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        type: string
+    type: object
+  domain.UpdatePlanRequest:
+    properties:
+      currency_id:
+        type: string
+      description:
+        type: string
+      features:
+        items:
+          $ref: '#/definitions/domain.PlanFeatureRequest'
+        type: array
+      interval:
+        type: string
+      is_active:
+        type: boolean
+      is_public:
+        type: boolean
+      name:
+        type: string
+      price:
+        type: number
+      sort_order:
+        type: integer
+    required:
+    - currency_id
+    - description
+    - interval
+    - name
+    type: object
+  domain.UpdateTransactionRequest:
+    properties:
+      amount:
+        type: number
+      category_id:
+        type: string
+      currency_id:
+        type: string
+      date:
+        type: string
+      description:
+        type: string
+      payment_method_id:
+        type: string
+      type:
+        $ref: '#/definitions/domain.TransactionType'
+    type: object
+  health.HealthResponse:
+    properties:
+      environment:
+        type: string
+      guid:
+        type: string
+      info:
+        $ref: '#/definitions/health.InfoData'
+      status:
+        type: string
+      timestamp:
+        type: string
+      version:
+        type: string
+    type: object
+  health.InfoData:
+    properties:
+      databaseOK:
+        type: boolean
+      goVersion:
+        type: string
+      uptime:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact:
-    email: support@miapp.com
+    email: support@mymoney.com
     name: API Support
-    url: http://www.miapp.com/support
+    url: http://www.mymoney.com/support
   description: API para la aplicación de finanzas personales
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
-  title: Mi App Backend API
+  title: MyMoney Backend API
   version: "1.0"
 paths:
   /admin/subscriptions:
@@ -317,7 +482,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/user_subscription.SubscriptionResponse'
+              $ref: '#/definitions/domain.SubscriptionResponse'
             type: array
         "401":
           description: Unauthorized
@@ -354,7 +519,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/user_subscription.SubscriptionResponse'
+              $ref: '#/definitions/domain.SubscriptionResponse'
             type: array
         "400":
           description: Bad Request
@@ -379,6 +544,449 @@ paths:
       summary: Obtener suscripciones por estado
       tags:
       - subscriptions
+  /api/categories:
+    get:
+      description: Retorna todas las categorías del usuario autenticado
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Category'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Obtener todas las categorías del usuario
+      tags:
+      - categories
+    post:
+      consumes:
+      - application/json
+      description: Crea una nueva categoría para el usuario autenticado
+      parameters:
+      - description: Datos de la categoría a crear
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Category'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Crear una nueva categoría
+      tags:
+      - categories
+  /api/categories/{id}:
+    delete:
+      description: Elimina una categoría existente
+      parameters:
+      - description: ID de la categoría
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Eliminar una categoría
+      tags:
+      - categories
+    get:
+      description: Retorna una categoría específica por su ID
+      parameters:
+      - description: ID de la categoría
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Category'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Obtener una categoría específica
+      tags:
+      - categories
+    put:
+      consumes:
+      - application/json
+      description: Actualiza una categoría existente
+      parameters:
+      - description: ID de la categoría
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Datos de la categoría a actualizar
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/domain.UpdateCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Category'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Actualizar una categoría
+      tags:
+      - categories
+  /api/transactions:
+    get:
+      description: Retorna todas las transacciones del usuario autenticado
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Transaction'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Obtener todas las transacciones del usuario
+      tags:
+      - transactions
+    post:
+      consumes:
+      - application/json
+      description: Crea una nueva transacción para el usuario autenticado
+      parameters:
+      - description: Datos de la transacción a crear
+        in: body
+        name: transaction
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateTransactionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Transaction'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Crear una nueva transacción
+      tags:
+      - transactions
+  /api/transactions/{id}:
+    delete:
+      description: Elimina una transacción existente
+      parameters:
+      - description: ID de la transacción
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Eliminar una transacción
+      tags:
+      - transactions
+    get:
+      description: Retorna una transacción específica por su ID
+      parameters:
+      - description: ID de la transacción
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Transaction'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Obtener una transacción específica
+      tags:
+      - transactions
+    put:
+      consumes:
+      - application/json
+      description: Actualiza una transacción existente
+      parameters:
+      - description: ID de la transacción
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Datos de la transacción a actualizar
+        in: body
+        name: transaction
+        required: true
+        schema:
+          $ref: '#/definitions/domain.UpdateTransactionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Transaction'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Actualizar una transacción
+      tags:
+      - transactions
+  /api/transactions/category/{categoryId}:
+    get:
+      description: Retorna todas las transacciones de una categoría específica
+      parameters:
+      - description: ID de la categoría
+        in: path
+        name: categoryId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Transaction'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Obtener transacciones por categoría
+      tags:
+      - transactions
+  /api/transactions/date-range:
+    get:
+      description: Retorna todas las transacciones dentro de un rango de fechas
+      parameters:
+      - description: Fecha de inicio (formato YYYY-MM-DD)
+        in: query
+        name: start_date
+        required: true
+        type: string
+      - description: Fecha de fin (formato YYYY-MM-DD)
+        in: query
+        name: end_date
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Transaction'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Obtener transacciones por rango de fechas
+      tags:
+      - transactions
   /auth/login:
     post:
       consumes:
@@ -413,6 +1021,40 @@ paths:
       summary: Login
       tags:
       - auth
+  /auth/refresh-token:
+    post:
+      consumes:
+      - application/json
+      description: Refreshes an access token using a refresh token
+      parameters:
+      - description: Refresh token
+        in: body
+        name: refreshToken
+        required: true
+        schema:
+          $ref: '#/definitions/api.RefreshTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.RefreshTokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Refresh token
+      tags:
+      - auth
   /auth/register:
     post:
       consumes:
@@ -431,7 +1073,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/api.UserResponse'
+            $ref: '#/definitions/api.LoginResponse'
         "400":
           description: Bad Request
           schema:
@@ -459,7 +1101,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/currency.CurrencyResponse'
+              $ref: '#/definitions/domain.CurrencyResponse'
             type: array
       summary: Obtener todas las monedas
       tags:
@@ -474,14 +1116,14 @@ paths:
         name: currency
         required: true
         schema:
-          $ref: '#/definitions/currency.CreateCurrencyRequest'
+          $ref: '#/definitions/domain.CreateCurrencyRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/currency.CurrencyResponse'
+            $ref: '#/definitions/domain.CurrencyResponse'
         "400":
           description: Bad Request
           schema:
@@ -554,7 +1196,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/currency.CurrencyResponse'
+            $ref: '#/definitions/domain.CurrencyResponse'
         "404":
           description: Not Found
           schema:
@@ -579,14 +1221,14 @@ paths:
         name: currency
         required: true
         schema:
-          $ref: '#/definitions/currency.UpdateCurrencyRequest'
+          $ref: '#/definitions/domain.UpdateCurrencyRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/currency.CurrencyResponse'
+            $ref: '#/definitions/domain.CurrencyResponse'
         "400":
           description: Bad Request
           schema:
@@ -628,7 +1270,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/currency.CurrencyResponse'
+              $ref: '#/definitions/domain.CurrencyResponse'
             type: array
       summary: Obtener monedas activas
       tags:
@@ -650,7 +1292,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/currency.CurrencyResponse'
+            $ref: '#/definitions/domain.CurrencyResponse'
         "404":
           description: Not Found
           schema:
@@ -692,6 +1334,243 @@ paths:
       summary: Quick health check endpoint
       tags:
       - health
+  /payment-methods:
+    get:
+      consumes:
+      - application/json
+      description: Retorna todos los métodos de pago del usuario autenticado
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.PaymentMethod'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Obtener todos los métodos de pago
+      tags:
+      - payment-methods
+    post:
+      consumes:
+      - application/json
+      description: Crea un nuevo método de pago para el usuario autenticado
+      parameters:
+      - description: Datos del método de pago
+        in: body
+        name: method
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreatePaymentMethodRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.PaymentMethod'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Crear un método de pago
+      tags:
+      - payment-methods
+  /payment-methods/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Elimina un método de pago existente
+      parameters:
+      - description: ID del método de pago
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Eliminar un método de pago
+      tags:
+      - payment-methods
+    get:
+      consumes:
+      - application/json
+      description: Retorna los detalles de un método de pago específico
+      parameters:
+      - description: ID del método de pago
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.PaymentMethod'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Obtener un método de pago por ID
+      tags:
+      - payment-methods
+    put:
+      consumes:
+      - application/json
+      description: Actualiza los datos de un método de pago existente
+      parameters:
+      - description: ID del método de pago
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Datos actualizados del método de pago
+        in: body
+        name: method
+        required: true
+        schema:
+          $ref: '#/definitions/domain.UpdatePaymentMethodRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.PaymentMethod'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: Actualizar un método de pago
+      tags:
+      - payment-methods
   /plans:
     get:
       consumes:
@@ -704,7 +1583,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/plan.PlanResponse'
+              $ref: '#/definitions/domain.PlanResponse'
             type: array
       summary: Obtener todos los planes
       tags:
@@ -719,14 +1598,14 @@ paths:
         name: plan
         required: true
         schema:
-          $ref: '#/definitions/plan.CreatePlanRequest'
+          $ref: '#/definitions/domain.CreatePlanRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/plan.PlanResponse'
+            $ref: '#/definitions/domain.PlanResponse'
         "400":
           description: Bad Request
           schema:
@@ -799,7 +1678,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/plan.PlanResponse'
+            $ref: '#/definitions/domain.PlanResponse'
         "404":
           description: Not Found
           schema:
@@ -824,14 +1703,14 @@ paths:
         name: plan
         required: true
         schema:
-          $ref: '#/definitions/plan.UpdatePlanRequest'
+          $ref: '#/definitions/domain.UpdatePlanRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/plan.PlanResponse'
+            $ref: '#/definitions/domain.PlanResponse'
         "400":
           description: Bad Request
           schema:
@@ -873,7 +1752,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/plan.PlanResponse'
+              $ref: '#/definitions/domain.PlanResponse'
             type: array
       summary: Obtener planes activos
       tags:
@@ -890,7 +1769,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/plan.PlanResponse'
+              $ref: '#/definitions/domain.PlanResponse'
             type: array
       summary: Obtener planes públicos
       tags:
@@ -907,7 +1786,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/user_subscription.SubscriptionResponse'
+              $ref: '#/definitions/domain.SubscriptionResponse'
             type: array
         "401":
           description: Unauthorized
@@ -930,14 +1809,14 @@ paths:
         name: subscription
         required: true
         schema:
-          $ref: '#/definitions/user_subscription.CreateSubscriptionRequest'
+          $ref: '#/definitions/domain.CreateSubscriptionRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/user_subscription.SubscriptionResponse'
+            $ref: '#/definitions/domain.SubscriptionResponse'
         "400":
           description: Bad Request
           schema:
@@ -984,7 +1863,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user_subscription.SubscriptionResponse'
+            $ref: '#/definitions/domain.SubscriptionResponse'
         "401":
           description: Unauthorized
           schema:
@@ -1019,7 +1898,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user_subscription.SubscriptionResponse'
+            $ref: '#/definitions/domain.SubscriptionResponse'
         "401":
           description: Unauthorized
           schema:
@@ -1060,7 +1939,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user_subscription.SubscriptionResponse'
+            $ref: '#/definitions/domain.SubscriptionResponse'
         "401":
           description: Unauthorized
           schema:
